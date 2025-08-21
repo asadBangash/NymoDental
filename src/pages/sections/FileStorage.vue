@@ -1,66 +1,69 @@
 <template>
   <main class="main-container">
+    <!-- Header Section -->
     <div class="header-section">
       <div>
-        <h1 class="page-title">Imaging &amp; File Storage</h1>
+        <h1 class="page-title">Imaging & File Storage</h1>
         <p class="subtitle">
           Manage files for patient: <span class="patient-name">{{ patientName }}</span>
         </p>
       </div>
       <div class="header-buttons">
         <button class="btn btn-blue">
-          <i class="material-icons-outlined icon-margin icon-small">upload_file</i> Upload
-          File
+          <span class="material-symbols-outlined icon-small">upload</span>
+          Upload File
         </button>
         <button class="btn btn-light">
-          <i class="material-icons-outlined icon-margin icon-small">create_new_folder</i>
+          <span class="material-symbols-outlined icon-small">create_new_folder</span>
           New Folder
         </button>
       </div>
     </div>
 
+    <!-- File List -->
     <div class="file-list-card">
       <div class="table-header-container">
         <div class="table-header-row">
-          <div class="table-header-cell col-5">Name</div>
-          <div class="table-header-cell col-2">Type</div>
-          <div class="table-header-cell col-2">Date Modified</div>
-          <div class="table-header-cell col-1">Size</div>
-          <div class="table-header-cell col-2 text-right">Actions</div>
+          <div class="table-header-cell col-name">Name</div>
+          <div class="table-header-cell col-type">Type</div>
+          <div class="table-header-cell col-date">Date Modified</div>
+          <div class="table-header-cell col-size">Size</div>
+          <div class="table-header-cell col-actions">Actions</div>
         </div>
       </div>
       <div class="table-rows-container">
         <div v-for="file in files" :key="file.name" class="table-row-item">
-          <div class="table-cell-content col-5">
-            <i :class="['material-icons-outlined', 'icon-margin', file.iconColor]">{{
-              file.icon
-            }}</i>
+          <div class="table-cell-content col-name">
+            <span class="material-symbols-outlined icon-margin" :class="file.iconColor">
+              {{ file.icon }}
+            </span>
             <span class="file-name">{{ file.name }}</span>
           </div>
-          <span class="table-cell-content col-2">{{ file.type }}</span>
-          <span class="table-cell-content col-2">{{ file.dateModified }}</span>
-          <span class="table-cell-content col-1">{{ file.size }}</span>
-          <div class="table-cell-content col-2 actions">
+          <span class="table-cell-content col-type">{{ file.type }}</span>
+          <span class="table-cell-content col-date">{{ file.dateModified }}</span>
+          <span class="table-cell-content col-size">{{ file.size }}</span>
+          <div class="table-cell-content col-actions actions">
             <button class="action-btn">
-              <i class="material-icons-outlined icon-action">edit</i>
+              <span class="material-symbols-outlined icon-action">edit</span>
             </button>
             <button v-if="file.type !== 'Folder'" class="action-btn action-draw">
-              <i class="material-icons-outlined icon-action">draw</i>
+              <span class="material-symbols-outlined icon-action">draw</span>
             </button>
             <button class="action-btn action-delete">
-              <i class="material-icons-outlined icon-action">delete</i>
+              <span class="material-symbols-outlined icon-action">delete</span>
             </button>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Integrations Section -->
     <div class="integrations-section">
       <h3 class="integrations-title">System Integrations</h3>
       <div class="integrations-grid">
         <div class="integration-card">
           <div class="icon-container-blue">
-            <i class="material-icons-outlined icon-large">integration_instructions</i>
+            <span class="material-symbols-outlined icon-large">dns</span>
           </div>
           <div class="integration-content">
             <p class="integration-heading">PACS Integration</p>
@@ -68,24 +71,25 @@
               Connect to your Picture Archiving and Communication System for seamless data
               flow.
             </p>
-            <button class="link-btn link-blue">
+            <a href="#" class="link-btn link-blue">
               Configure Now
-              <i class="material-icons-outlined icon-arrow">arrow_forward</i>
-            </button>
+              <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
+            </a>
           </div>
         </div>
         <div class="integration-card">
           <div class="icon-container-green">
-            <i class="material-icons-outlined icon-large">photo_camera</i>
+            <span class="material-symbols-outlined icon-large">photo_camera</span>
           </div>
           <div class="integration-content">
             <p class="integration-heading">Auto-import from Imaging Hardware</p>
             <p class="integration-description">
               Automatically pull images directly from connected imaging devices.
             </p>
-            <button class="link-btn link-green">
-              Setup Device <i class="material-icons-outlined icon-arrow">arrow_forward</i>
-            </button>
+            <a href="#" class="link-btn link-green">
+              Setup Device
+              <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
+            </a>
           </div>
         </div>
       </div>
@@ -129,7 +133,7 @@ export default {
           type: "DICOM File",
           dateModified: "2023-10-24",
           size: "15.8 MB",
-          icon: "picture_as_pdf",
+          icon: "description",
           iconColor: "text-red",
         },
       ],
@@ -148,17 +152,23 @@ body {
   color: #111827;
 }
 
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Layout */
 .main-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  box-sizing: border-box;
 }
 
 /* Header Section */
 .header-section {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
   margin-bottom: 2rem;
 }
@@ -184,13 +194,6 @@ body {
 .header-buttons {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-@media (min-width: 768px) {
-  .header-buttons {
-    margin-top: 0;
-  }
 }
 
 .btn {
@@ -202,6 +205,7 @@ body {
   align-items: center;
   cursor: pointer;
   border: none;
+  font-family: inherit;
 }
 
 .btn-blue {
@@ -223,7 +227,8 @@ body {
   background-color: #f9fafb;
 }
 
-.icon-margin {
+.icon-small {
+  font-size: 1.25rem;
   margin-right: 0.5rem;
 }
 
@@ -233,14 +238,16 @@ body {
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .table-header-row,
 .table-row-item {
   display: grid;
-  grid-template-columns: 4fr 2fr 2fr 1fr 2fr;
+  grid-template-columns: 3.5fr 2fr 2fr 1.5fr 1.5fr;
   align-items: center;
   padding: 0.75rem 1rem;
+  gap: 1rem;
 }
 
 .table-header-row {
@@ -259,6 +266,10 @@ body {
   transition: background-color 0.2s;
 }
 
+.table-row-item:last-child {
+  border-bottom: none;
+}
+
 .table-row-item:hover {
   background-color: #f9fafb;
 }
@@ -266,18 +277,23 @@ body {
 .file-name {
   font-weight: 500;
   margin-left: 0.5rem;
+  color: #374151;
 }
 
 .table-cell-content {
   display: flex;
   align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.table-row-item span {
-  color: #374151;
+.col-type,
+.col-date {
+  color: #6b7280;
 }
 
-.table-row-item span:nth-child(4) {
+.col-size {
   color: #6b7280;
 }
 
@@ -299,26 +315,29 @@ body {
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-btn:hover {
   background-color: #f3f4f6;
 }
 
-.action-btn i {
+.icon-action {
   font-size: 1.125rem;
   color: #6b7280;
 }
 
-.action-btn:hover i {
+.action-btn:hover .icon-action {
   color: #2563eb;
 }
 
-.action-draw:hover i {
+.action-draw:hover .icon-action {
   color: #16a34a;
 }
 
-.action-delete:hover i {
+.action-delete:hover .icon-action {
   color: #ef4444;
 }
 
@@ -346,6 +365,7 @@ body {
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.2s;
 }
 
@@ -371,6 +391,10 @@ body {
   color: #16a34a;
 }
 
+.icon-large {
+  font-size: 1.5rem;
+}
+
 .integration-heading {
   font-size: 1rem;
   font-weight: 600;
@@ -393,6 +417,9 @@ body {
   background: none;
   border: none;
   padding: 0;
+  color: inherit;
+  font-family: inherit;
+  text-decoration: none;
 }
 
 .link-blue {

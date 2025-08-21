@@ -25,10 +25,16 @@ export default {
       switch (this.activeSection) {
         case "dashboard":
           return "Dashboard";
-        case "crm":
-          return "CRM";
-        case "inventory":
-          return "Inventory";
+        case "patients":
+          return "Patients";
+        case "appointments":
+          return "Appointments";
+        case "chart":
+          return "Chart";
+        case "files":
+          return "File Storage";
+        case "staff":
+          return "Staff Management";
         case "reports":
           return "Reports";
         default:
@@ -38,13 +44,19 @@ export default {
     getSubtitle() {
       switch (this.activeSection) {
         case "dashboard":
-          return "A quick data overview of the Pharmacy products.";
-        case "crm":
-          return "Manage your client relationships and appointments.";
-        case "inventory":
-          return "Overview of medicines stock and availability.";
+          return "A quick data overview of the Dentistry .";
+        case "patients":
+          return "Patient Records";
+        case "appointments":
+          return "Appointments Calendar";
+        case "chart":
+          return "Analytics & Charts";
+        case "files":
+          return "Manage your files";
+        case "staff":
+          return "Staff Management";
         case "reports":
-          return "Detailed insights and pharmacy performance reports.";
+          return "Generate and view reports";
         default:
           return "";
       }
@@ -61,18 +73,16 @@ export default {
 <style scoped>
 .dashboard-container {
   display: flex;
-  background: #ffffff;
+  background: white; /* Changed to match sidebar background */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  margin-left: 90px; /* Same as sidebar width */
-  padding: 20px;
+  min-height: 100vh; /* Ensure it takes at least the full viewport height */
 }
-
-/* Sidebar styles (unchanged)... */
 
 .main {
   flex-grow: 1;
   padding: 20px 30px;
-  background: #fff;
+  background: white; /* Changed to match sidebar background */
+  margin-left: 90px; /* This margin now handles the spacing for the fixed sidebar */
 }
 .top-bar {
   display: flex;
@@ -97,7 +107,6 @@ export default {
   height: 40px;
   border-radius: 50%;
 }
-/* Search Row */
 .search-row {
   display: flex;
   gap: 10px;
@@ -122,7 +131,6 @@ export default {
   border-radius: 6px;
   cursor: pointer;
 }
-/* Cards */
 .cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -158,8 +166,6 @@ export default {
 .card.shortage {
   background: #d69759;
 }
-
-/* Grid Section */
 .grid-section {
   background: #f3f5f7;
   padding: 30px;

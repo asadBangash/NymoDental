@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <!-- Patient Form Modal -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal">
         <header class="modal-header">
@@ -8,8 +9,8 @@
         </header>
         <div class="modal-body">
           <form @submit.prevent="submitForm">
+            <!-- Patient Details Section -->
             <div class="form-section">
-              <h4>Patient Details</h4>
               <div class="form-grid">
                 <div class="form-group">
                   <label>ID</label>
@@ -82,6 +83,7 @@
               </div>
             </div>
 
+            <!-- Contact Details Section -->
             <div class="form-section">
               <h4>Contact Details</h4>
               <div class="form-grid">
@@ -140,6 +142,7 @@
               </div>
             </div>
 
+            <!-- Practice Details Section -->
             <div class="form-section">
               <h4>Practice Details</h4>
               <div class="form-grid">
@@ -225,24 +228,19 @@
         </footer>
       </div>
     </div>
-    <main class="main-content">
-      <header class="header">
-        <h1 class="page-title">Patients</h1>
-        <div class="header-actions">
-          <div class="search-container">
-            <span class="material-icons search-icon">search</span>
-            <input type="text" placeholder="Search patients..." class="search-input" />
-          </div>
-          <button class="add-button" @click="openModal(false)">
-            <span class="material-icons">add</span>
-            Add New Patient
-          </button>
-        </div>
-      </header>
 
+    <!-- Main Content for the Page -->
+    <main class="main-content">
       <div class="content-wrapper">
+        <!-- Patient List Panel -->
         <div class="patient-list-panel">
-          <h2 class="panel-title">All Patients</h2>
+          <div class="panel-header">
+            <h2 class="panel-title">All Patients</h2>
+            <button class="add-button" @click="openModal(false)">
+              <span class="material-icons">add</span>
+              Add New Patient
+            </button>
+          </div>
           <div class="patient-list">
             <div
               v-for="patient in paginatedPatients"
@@ -275,6 +273,7 @@
           </div>
         </div>
 
+        <!-- Patient Details Panel -->
         <div class="patient-details-panel">
           <div v-if="selectedPatient">
             <div class="details-header">
@@ -306,6 +305,7 @@
               </div>
             </div>
 
+            <!-- Tabbed Details Content -->
             <div class="details-body">
               <div class="tabs-container">
                 <nav class="tabs-nav">
@@ -320,6 +320,7 @@
                 </nav>
               </div>
 
+              <!-- Tab Content -->
               <div class="tab-content">
                 <div v-if="activeTab === 'Patient Info'" class="grid-content">
                   <div class="info-item">
@@ -349,8 +350,9 @@
                         v-for="concern in selectedPatient.concerns"
                         :key="concern"
                         class="concern-tag"
-                        >{{ concern }}</span
                       >
+                        {{ concern }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -371,31 +373,11 @@
                     </div>
                   </div>
                 </div>
-
-                <div v-else-if="activeTab === 'Family'" class="info-item-full">
-                  <h4 class="info-label-members">Family Members</h4>
-                  <div class="family-members">
-                    <div
-                      v-for="member in selectedPatient.family"
-                      :key="member.name"
-                      class="member-card"
-                    >
-                      <img :src="member.image" :alt="member.name" class="member-avatar" />
-                      <div>
-                        <p class="member-name">{{ member.name }}</p>
-                        <p class="member-relation">{{ member.relation }}</p>
-                      </div>
-                    </div>
-                    <button class="add-member-button">
-                      <span class="material-icons">add</span>
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
-          <div v-else class="select-prompt">
-            <p>Please select a patient to view their details.</p>
+          <div v-else class="empty-state">
+            <p>Select a patient to view details.</p>
           </div>
         </div>
       </div>
@@ -405,317 +387,12 @@
 
 <script>
 export default {
-  name: "App",
   data() {
     return {
-      // Mock data for the patient list
-      patients: [
-        {
-          id: "PT-00123",
-          name: "Jane Doe",
-          lastVisit: "Last visit: 2 weeks ago",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuASP_ZWvXG8FRDk54yxGec7wvyUyQ--1c7Iggvpy9IYBEUpaKIZiiaGcDak7RmpKXdG1tSGORu4-hGVKiU9z78P14eRgxbfqVnV4q4Fq8LbvoTFu7d29jVf1BABFXlqOSCsdjI-5Kvjt-fDUaqjBU3zyadjYcpqfsUAms68DcNNPnU1V9ALk3fEsuueje-LFco0spQgmtbiGRL0zdsgrO8NV_tYFkG9dx6dCG6tYWcEyga69ZgFSTqK6bEAVh09abBXKYYeNe3Pa6w",
-          fullName: "Jane Amelia Doe",
-          dob: "July 15, 1985 (39 years)",
-          email: "jane.doe@example.com",
-          phone: "(123) 456-7890",
-          address: "123 Main Street, Anytown, USA 12345",
-          concerns: ["Gum Disease", "Bleeding Gums"],
-          family: [
-            {
-              name: "John Doe",
-              relation: "Spouse",
-              image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuCrMc0rx6ty1xpA0GSLTXPRz1CCT5w9m60TFFx-1mcIVQGdCHqFUsn0QMR2UfuVy06S8ZCkHQubDdF9zr1dETppjN6PuG-yzgiAi-5Dz7-xZNOKMVQTIOHrF2NC1-v70_xzJ1IISeF-qsdXnnGscDBPRUwZW_PXABgBT37zv7ygoegM_41jblu8vrems3npd9o_ks3iLf1lNbnoDM-ep051OxQpaANpFhR0RgSTQD6Pa2oxArfHHW5lr0Jp48ChrGqC7QlZCipGAmw",
-            },
-            {
-              name: "Jill Doe",
-              relation: "Daughter",
-              image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuAWrkGOdXrbtfo4m80Y1I0AFysz9SaOwOdpiWXHiBKSMNMTvI0GSKLaURQUJK-dmOBOhtrBJYP2yMh3-INfzp0I0WeGWbyEPKI3v6r6BgSj3a37zbRH5i6Sh_NF5Ga9138MlRPXyoO-minDRxqr1rtJrqsgtLYJGIAB7SrJ5t3-IJChHg-1UKb0K00UprQLZDVvfezKPoGhC_bJC4uPWlMp06M4-4GLcQmhpkQxS-ANI40RRpcVJP0jN0h0ifpZhMA2wG5kdlh0wyg",
-            },
-          ],
-          appointments: [
-            { id: 1, date: "11/15/2024", time: "10:00 AM", title: "Routine Check-up" },
-            { id: 2, date: "08/01/2024", time: "2:30 PM", title: "Teeth Cleaning" },
-          ],
-        },
-        {
-          id: "PT-00124",
-          name: "John Smith",
-          lastVisit: "Last visit: 1 month ago",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDzhv0qDhRdkeKwrhEfSPknPwyV6qqU2erlzf2xE_Mx93AWFnu_3g0_bmGYTa5SR3vH5NHV7FtTuCDWiWoCV947G7vSD-rG-l5O4HU4YoYRRgXTXlZlV_gTia9FRauEEOBpYPAX1TZcn46-BNpmBzuxbkdvq5ZXw9VfvO07XuASpiQlXWssebmXRDR41M5deJdmHI4k2ZFxgLEDucZt28TdjHlrVUN-uWpQ87x5GQ7i9aZcv38v5nyqo_19gURVNt1y0Crh0s-gzO4",
-          fullName: "John Michael Smith",
-          dob: "March 20, 1990 (34 years)",
-          email: "john.smith@example.com",
-          phone: "(987) 654-3210",
-          address: "456 Oak Avenue, Springfield, USA 67890",
-          concerns: ["Cavity Filling"],
-          family: [
-            {
-              name: "Sarah Smith",
-              relation: "Wife",
-              image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuCrMc0rx6ty1xpA0GSLTXPRz1CCT5w9m60TFFx-1mcIVQGdCHqFUsn0QMR2UfuVy06S8ZCkHQubDdF9zr1dETppjN6PuG-yzgiAi-5Dz7-xZNOKMVQTIOHrF2NC1-v70_xzJ1IISeF-qsdXnnGscDBPRUwZW_PXABgBT37zv7ygoegM_41jblu8vrems3npd9o_ks3iLf1lNbnoDM-ep051OxQpaANpFhR0RgSTQD6Pa2oxArfHHW5lr0Jp48ChrGqC7QlZCipGAmw",
-            },
-          ],
-          appointments: [
-            {
-              id: 3,
-              date: "12/10/2024",
-              time: "9:00 AM",
-              title: "Follow-up Consultation",
-            },
-            { id: 4, date: "10/15/2024", time: "11:00 AM", title: "X-ray" },
-          ],
-        },
-        {
-          id: "PT-00125",
-          name: "Alice Johnson",
-          lastVisit: "Last visit: 3 months ago",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDrZ8OtoumMtHdGZfU56YkhoRE4HWAsvIgtP6QcUtUcyraGoah1Ht1LfilRY5lUlpljei_J1NyWrqs1NmDF31OPYayxcJ9Jrm8ZUkeRONOaLU0meaGjzObeq336QXeESt44pW0xVxUmU6XaJIdqge8ALgO0VnPS6AW9ZB5F2w4Pi1aGUxfNebHSOgXXkTxbhxWG3OP_eTxNmdSq2jzXVCviGul0W6D3ZeUR7ykdGOQzS0Lv-SsgDIAywIN-kNQnWHrRE3wYmiW0ghY",
-          fullName: "Alice Marie Johnson",
-          dob: "February 5, 2000 (24 years)",
-          email: "alice.johnson@example.com",
-          phone: "(555) 123-4567",
-          address: "789 Pine Lane, Cityville, USA 98765",
-          concerns: ["Teeth Whitening"],
-          family: [],
-          appointments: [
-            {
-              id: 5,
-              date: "01/20/2025",
-              time: "3:00 PM",
-              title: "Consultation for Whitening",
-            },
-          ],
-        },
-        {
-          id: "PT-00126",
-          name: "Bob Williams",
-          lastVisit: "Last visit: 5 days ago",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDjgOyFwKgZJZxvyDpi7ATYs4W6XqkMOShUOShE5F8QQ89EiW00ZxSNv1d_JTLqx2VGYzf08AzG-L5NDNwNmPhOD0m1k_0Tnwmwx3Akab2ETSYHyxXkW6lrjxYPWztxnOgimSmg0D5Fe31JX3UIVQOEXIU4zqYETPyNtPYbsVYICSznR7wPlTAuFrHK5-EhAP2dRE5vV2daZIiG0Pw9W5GBB6T_R8Id48lPlwMDyxMT_JxRJWk8XI0O2EJ7t1MyKWQfNHDTzDRPlrU",
-          fullName: 'Robert "Bob" Williams',
-          dob: "October 10, 1975 (49 years)",
-          email: "bob.williams@example.com",
-          phone: "(111) 222-3333",
-          address: "321 Elm Street, Townsville, USA 54321",
-          concerns: ["Toothache"],
-          family: [
-            {
-              name: "Mary Williams",
-              relation: "Wife",
-              image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuCrMc0rx6ty1xpA0GSLTXPRz1CCT5w9m60TFFx-1mcIVQGdCHqFUsn0QMR2UfuVy06S8ZCkHQubDdF9zr1dETppjN6PuG-yzgiAi-5Dz7-xZNOKMVQTIOHrF2NC1-v70_xzJ1IISeF-qsdXnnGscDBPRUwZW_PXABgBT37zv7ygoegM_41jblu8vrems3npd9o_ks3iLf1lNbnoDM-ep051OxQpaANpFhR0RgSTQD6Pa2oxArfHHW5lr0Jp48ChrGqC7QlZCipGAmw",
-            },
-            {
-              name: "Tim Williams",
-              relation: "Son",
-              image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDjgOyFwKgZJZxvyDpi7ATYs4W6XqkMOShUOShE5F8QQ89EiW00ZxSNv1d_JTLqx2VGYzf08AzG-L5NDNwNmPhOD0m1k_0Tnwmwx3Akab2ETSYHyxXkW6lrjxYPWztxnOgimSmg0D5Fe31JX3UIVQOEXIU4zqYETPyNtPYbsVYICSznR7wPlTAuFrHK5-EhAP2dRE5vV2daZIiG0Pw9W5GBB6T_R8Id48lPlwMDyxMT_JxRJWk8XI0O2EJ7t1MyKWQfNHDTzDRPlrU",
-            },
-            {
-              name: "Sally Williams",
-              relation: "Daughter",
-              image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuAWrkGOdXrbtfo4m80Y1I0AFysz9SaOwOdpiWXHiBKSMNMTvI0GSKLaURQUJK-dmOBOhtrBJYP2yMh3-INfzp0I0WeGWbyEPKI3v6r6BgSj3a37zbRH5i6Sh_NF5Ga9138MlRPXyoO-minDRxqr1rtJrqsgtLYJGIAB7SrJ5t3-IJChHg-1UKb0K00UprQLZDVvfezKPoGhC_bJC4uPWlMp06M4-4GLcQmhpkQxS-ANI40RRpcVJP0jN0h0ifpZhMA2wG5kdlh0wyg",
-            },
-          ],
-          appointments: [
-            {
-              id: 6,
-              date: "11/15/2024",
-              time: "4:00 PM",
-              title: "Emergency Appointment",
-            },
-          ],
-        },
-        {
-          id: "PT-00127",
-          name: "Susan Lee",
-          lastVisit: "Last visit: 1 week ago",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDzhv0qDhRdkeKwrhEfSPknPwyV6qqU2erlzf2xE_Mx93AWFnu_3g0_bmGYTa5SR3vH5NHV7FtTuCDWiWoCV947G7vSD-rG-l5O4HU4YoYRRgXTXlZlV_gTia9FRauEEOBpYPAX1TZcn46-BNpmBzuxbkdvq5ZXw9VfvO07XuASpiQlXWssebmXRDR41M5deJdmHI4k2ZFxgLEDucZt28TdjHlrVUN-uWpQ87x5GQ7i9aZcv38v5nyqo_19gURVNt1y0Crh0s-gzO4",
-        },
-        {
-          id: "PT-00128",
-          name: "David Wilson",
-          lastVisit: "Last visit: 2 months ago",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDjgOyFwKgZJZxvyDpi7ATYs4W6XqkMOShUOShE5F8QQ89EiW00ZxSNv1d_JTLqx2VGYzf08AzG-L5NDNwNmPhOD0m1k_0Tnwmwx3Akab2ETSYHyxXkW6lrjxYPWztxnOgimSmg0D5Fe31JX3UIVQOEXIU4zqYETPyNtPYbsVYICSznR7wPlTAuFrHK5-EhAP2dRE5vV2daZIiG0Pw9W5GBB6T_R8Id48lPlwMDyxMT_JxRJWk8XI0O2EJ7t1MyKWQfNHDTzDRPlrU",
-        },
-        {
-          id: "PT-00129",
-          name: "Emily Clark",
-          lastVisit: "Last visit: 4 weeks ago",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDrZ8OtoumMtHdGZfU56YkhoRE4HWAsvIgtP6QcUtUcyraGoah1Ht1LfilRY5lUlpljei_J1NyWrqs1NmDF31OPYayxcJ9Jrm8ZUkeRONOaLU0meaGjzObeq336QXeESt44pW0xVxUmU6XaJIdqge8ALgO0VnPS6AW9ZB5F2w4Pi1aGUxfNebHSOgXXkTxbhxWG3OP_eTxNmdSq2jzXVCviGul0W6D3ZeUR7ykdGOQzS0Lv-SsgDIAywIN-kNQnWHrRE3wYmiW0ghY",
-        },
-        {
-          id: "PT-00130",
-          name: "James Brown",
-          lastVisit: "Last visit: 6 months ago",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDzhv0qDhRdkeKwrhEfSPknPwyV6qqU2erlzf2xE_Mx93AWFnu_3g0_bmGYTa5SR3vH5NHV7FtTuCDWiWoCV947G7vSD-rG-l5O4HU4YoYRRgXTXlZlV_gTia9FRauEEOBpYPAX1TZcn46-BNpmBzuxbkdvq5ZXw9VfvO07XuASpiQlXWssebmXRDR41M5deJdmHI4k2ZFxgLEDucZt28TdjHlrVUN-uWpQ87x5GQ7i9aZcv38v5nyqo_19gURVNt1y0Crh0s-gzO4",
-        },
-      ],
-      selectedPatient: null,
-      tabs: ["Patient Info", "Appointments", "Billing & Payments", "Family"],
-      activeTab: "Patient Info",
-      currentPage: 1,
-      itemsPerPage: 5,
-      // New data properties for the modal
       showModal: false,
-      isEditing: false, // New data property to track edit mode
+      isEditing: false,
       form: {
         id: "",
-        title: "",
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        preferredName: "",
-        gender: "",
-        dob: "",
-        niNumber: "",
-        nhsNumber: "",
-        insuranceNumber: "",
-        legacyId: "",
-        ethnicity: "",
-        gp: "",
-        address1: "",
-        address2: "",
-        town: "",
-        county: "",
-        postcode: "",
-        homePhone: "",
-        workPhone: "",
-        mobilePhone: "",
-        preferredPhone: "",
-        email: "",
-        doctor: "",
-        occupation: "",
-        location: "",
-        paymentPlan: "",
-        account: "",
-        dentist: "",
-        hygienist: "",
-        receiveEmail: "",
-        receiveSms: "",
-        marketingConsent: "",
-        dentistRecallInterval: "",
-        nextDentistRecall: "",
-        hygienistRecallInterval: "",
-        nextHygienistRecall: "",
-        recallMethod: "",
-        acquisitionSource: "",
-      },
-    };
-  },
-  mounted() {
-    this.selectPatient(this.paginatedPatients[0]);
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.patients.length / this.itemsPerPage);
-    },
-    paginatedPatients() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      return this.patients.slice(startIndex, endIndex);
-    },
-  },
-  methods: {
-    // Method to handle patient selection
-    selectPatient(patient) {
-      this.selectedPatient = patient;
-      if (this.selectedPatient) {
-        this.activeTab = "Patient Info";
-      }
-    },
-    // Methods for pagination
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-        this.selectPatient(this.paginatedPatients[0]);
-      }
-    },
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-        this.selectPatient(this.paginatedPatients[0]);
-      }
-    },
-    // New methods for the modal
-    openModal(isEditMode) {
-      this.isEditing = isEditMode;
-      if (this.isEditing && this.selectedPatient) {
-        // Populate form with existing patient data
-        this.form.id = this.selectedPatient.id;
-        const nameParts = this.selectedPatient.name.split(" ");
-        this.form.firstName = nameParts[0];
-        this.form.lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
-        this.form.email = this.selectedPatient.email;
-        this.form.mobilePhone = this.selectedPatient.phone;
-        const addressParts = this.selectedPatient.address.split(", ");
-        this.form.address1 = addressParts[0];
-        this.form.address2 = addressParts[1];
-        this.form.town = addressParts[2];
-        this.form.county = addressParts[3];
-        this.form.postcode = addressParts[4];
-        this.form.dob = this.selectedPatient.dob.split(" ")[0]; // Basic parsing for demo
-      } else {
-        // Reset form for a new patient
-        this.resetForm();
-      }
-      this.showModal = true;
-    },
-    closeModal() {
-      this.showModal = false;
-      this.resetForm();
-    },
-    submitForm() {
-      if (this.isEditing) {
-        // Find the patient in the list and update their details
-        const patientToUpdate = this.patients.find(
-          (p) => p.id === this.selectedPatient.id
-        );
-        if (patientToUpdate) {
-          patientToUpdate.name = `${this.form.firstName} ${this.form.lastName}`;
-          patientToUpdate.fullName = `${this.form.firstName} ${this.form.middleName} ${this.form.lastName}`;
-          patientToUpdate.email = this.form.email;
-          patientToUpdate.phone = this.form.mobilePhone;
-          patientToUpdate.address = `${this.form.address1}, ${this.form.address2}, ${this.form.town}, ${this.form.county}, ${this.form.postcode}`;
-          patientToUpdate.dob = this.form.dob;
-        }
-      } else {
-        // Create a new patient object from the form data
-        const newPatient = {
-          id: "PT-" + Math.floor(Math.random() * 100000), // Generate a random ID
-          name: `${this.form.firstName} ${this.form.lastName}`,
-          lastVisit: "Just added",
-          image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuASP_ZWvXG8FRDk54yxGec7wvyUyQ--1c7Iggvpy9IYBEUpaKIZiiaGcDak7RmpKXdG1tSGORu4-hGVKiU9z78P14eRgxbfqVnV4q4Fq8LbvoTFu7d29jVf1BABFXlqOSCsdjI-5Kvjt-fDUaqjBU3zyadjYcpqfsUAms68DcNNPnU1V9ALk3fEsuueje-LFco0spQgmtbiGRL0zdsgrO8NV_tYFkG9dx6dCG6tYWcEyga69ZgFSTqK6bEAVh09abBXKYYeNe3Pa6w", // Default image
-          fullName: `${this.form.firstName} ${this.form.middleName} ${this.form.lastName}`,
-          dob: this.form.dob,
-          email: this.form.email,
-          phone: this.form.mobilePhone,
-          address: `${this.form.address1}, ${this.form.address2}, ${this.form.town}, ${this.form.county}, ${this.form.postcode}`,
-          concerns: [],
-          family: [],
-          appointments: [],
-        };
-        // Add the new patient to the beginning of the list
-        this.patients.unshift(newPatient);
-      }
-      this.closeModal();
-    },
-    resetForm() {
-      this.form = {
-        id: "PT-" + Math.floor(Math.random() * 100000),
         title: "Mr",
         firstName: "",
         middleName: "",
@@ -737,7 +414,201 @@ export default {
         homePhone: "",
         workPhone: "",
         mobilePhone: "",
-        preferredPhone: "Home",
+        preferredPhone: "Mobile",
+        email: "",
+        doctor: "",
+        occupation: "",
+        location: "",
+        paymentPlan: "Private",
+        account: "",
+        dentist: "",
+        hygienist: "",
+        receiveEmail: "Yes",
+        receiveSms: "Yes",
+        marketingConsent: "Yes",
+        dentistRecallInterval: "",
+        nextDentistRecall: "",
+        hygienistRecallInterval: "",
+        nextHygienistRecall: "",
+        recallMethod: "SMS",
+        acquisitionSource: "",
+      },
+      patients: [
+        {
+          id: 1,
+          name: "Dr. Alistair Finch",
+          image: "https://randomuser.me/api/portraits/men/1.jpg",
+          lastVisit: "Last Visit: 2 days ago",
+          fullName: "Alistair Finch",
+          dob: "1985-05-15",
+          email: "alistair.finch@example.com",
+          phone: "+44 7700 900001",
+          address: "123 Elm Street, Manchester, M1 1AA",
+          concerns: ["Toothache", "Cavity"],
+          appointments: [
+            { id: 1, date: "2023-04-20", title: "Dental Check-up", time: "10:30 AM" },
+            { id: 2, date: "2023-03-10", title: "Scale and Polish", time: "02:00 PM" },
+          ],
+        },
+        {
+          id: 2,
+          name: "Isabella Chen",
+          image: "https://randomuser.me/api/portraits/women/2.jpg",
+          lastVisit: "Last Visit: 5 days ago",
+          fullName: "Isabella Chen",
+          dob: "1992-11-23",
+          email: "isabella.chen@example.com",
+          phone: "+44 7700 900002",
+          address: "456 Oak Avenue, London, E1 2BC",
+          concerns: ["Wisdom Tooth Pain"],
+          appointments: [
+            {
+              id: 3,
+              date: "2023-04-18",
+              title: "Wisdom Tooth Extraction",
+              time: "09:00 AM",
+            },
+          ],
+        },
+        {
+          id: 3,
+          name: "Marcus Thorne",
+          image: "https://randomuser.me/api/portraits/men/3.jpg",
+          lastVisit: "Last Visit: 1 week ago",
+          fullName: "Marcus Thorne",
+          dob: "1978-08-01",
+          email: "marcus.thorne@example.com",
+          phone: "+44 7700 900003",
+          address: "789 Pine Road, Birmingham, B2 3CD",
+          concerns: ["Orthodontic Consultation"],
+          appointments: [
+            {
+              id: 4,
+              date: "2023-04-15",
+              title: "Orthodontic Consultation",
+              time: "01:00 PM",
+            },
+          ],
+        },
+        {
+          id: 4,
+          name: "Sophia Rodriguez",
+          image: "https://randomuser.me/api/portraits/women/4.jpg",
+          lastVisit: "Last Visit: 1 month ago",
+          fullName: "Sophia Rodriguez",
+          dob: "1998-02-14",
+          email: "sophia.rodriguez@example.com",
+          phone: "+44 7700 900004",
+          address: "101 Maple Lane, Bristol, BS1 4DE",
+          concerns: ["Teeth Whitening"],
+          appointments: [
+            { id: 5, date: "2023-03-20", title: "Teeth Whitening", time: "11:00 AM" },
+          ],
+        },
+        {
+          id: 5,
+          name: "Leo Carter",
+          image: "https://randomuser.me/api/portraits/men/5.jpg",
+          lastVisit: "Last Visit: 2 months ago",
+          fullName: "Leo Carter",
+          dob: "1989-06-30",
+          email: "leo.carter@example.com",
+          phone: "+44 7700 900005",
+          address: "202 Cedar Street, Leeds, LS2 5EF",
+          concerns: ["Routine Check-up"],
+          appointments: [
+            { id: 6, date: "2023-02-15", title: "Routine Check-up", time: "03:00 PM" },
+          ],
+        },
+        {
+          id: 6,
+          name: "Dr. Olivia Hayes",
+          image: "https://randomuser.me/api/portraits/women/6.jpg",
+          lastVisit: "Last Visit: 3 weeks ago",
+          fullName: "Olivia Hayes",
+          dob: "1975-09-09",
+          email: "olivia.hayes@example.com",
+          phone: "+44 7700 900006",
+          address: "303 Birch Place, Glasgow, G1 5GH",
+          concerns: ["Denture Fitting"],
+          appointments: [
+            { id: 7, date: "2023-04-01", title: "Denture Fitting", time: "04:00 PM" },
+          ],
+        },
+      ],
+      selectedPatient: null,
+      activeTab: "Patient Info",
+      tabs: ["Patient Info", "Appointments", "Family", "Invoices", "Documents"],
+      currentPage: 1,
+      patientsPerPage: 10,
+    };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.patients.length / this.patientsPerPage);
+    },
+    paginatedPatients() {
+      const start = (this.currentPage - 1) * this.patientsPerPage;
+      const end = start + this.patientsPerPage;
+      return this.patients.slice(start, end);
+    },
+  },
+  created() {
+    this.selectPatient(this.patients[0]);
+  },
+  methods: {
+    openModal(isEditing) {
+      this.isEditing = isEditing;
+      this.showModal = true;
+      if (isEditing && this.selectedPatient) {
+        this.form = { ...this.selectedPatient };
+      }
+    },
+    closeModal() {
+      this.showModal = false;
+      this.resetForm();
+    },
+    selectPatient(patient) {
+      this.selectedPatient = patient;
+    },
+    submitForm() {
+      if (this.isEditing) {
+        const index = this.patients.findIndex((p) => p.id === this.form.id);
+        if (index !== -1) {
+          this.patients.splice(index, 1, { ...this.form });
+        }
+      } else {
+        const newId =
+          this.patients.length > 0 ? Math.max(...this.patients.map((p) => p.id)) + 1 : 1;
+        this.patients.push({ ...this.form, id: newId });
+      }
+      this.closeModal();
+    },
+    resetForm() {
+      this.form = {
+        id: "",
+        title: "Mr",
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        preferredName: "",
+        gender: "Male",
+        dob: "",
+        niNumber: "",
+        nhsNumber: "",
+        insuranceNumber: "",
+        legacyId: "",
+        ethnicity: "British",
+        gp: "",
+        address1: "",
+        address2: "",
+        town: "",
+        county: "",
+        postcode: "",
+        homePhone: "",
+        workPhone: "",
+        mobilePhone: "",
+        preferredPhone: "Mobile",
         email: "",
         doctor: "",
         occupation: "",
@@ -757,588 +628,405 @@ export default {
         acquisitionSource: "",
       };
     },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
-
-/* Base Styles */
-#app {
-  display: flex;
-  font-family: "Poppins", sans-serif;
-  background-color: #f7f8fc;
-  min-height: 100vh;
-}
-
-.material-icons {
-  vertical-align: middle;
-}
-
-/* Main Content */
+/* Main layout */
 .main-content {
-  flex: 1;
-  padding: 32px;
+  padding: 30px;
+  background-color: #f3f5f7;
 }
-
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-
 .page-title {
-  font-size: 36px;
-  font-weight: 700;
-  color: #1f2937;
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
 }
-
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
-
 .search-container {
   position: relative;
+  display: flex;
+  align-items: center;
 }
-
+.search-input {
+  padding: 10px 10px 10px 40px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+}
 .search-icon {
   position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ca3af;
+  left: 10px;
+  color: #888;
 }
-
-.search-input {
-  padding: 8px 16px 8px 40px;
-  border: 1px solid #d1d5db;
-  border-radius: 9999px;
-  width: 256px;
-  outline: none;
-  transition: box-shadow 0.2s, border-color 0.2s;
-}
-
-.search-input:focus {
-  box-shadow: 0 0 0 2px #4f46e5;
-  border-color: #4f46e5;
-}
-
 .add-button {
   display: flex;
   align-items: center;
-  background-color: #4f46e5;
+  gap: 8px;
+  background-color: #4b3c97;
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 9999px;
+  padding: 10px 16px;
   border: none;
-  transition: background-color 0.3s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
 }
-
 .add-button:hover {
-  background-color: #4338ca;
+  background-color: #3a2e7a;
 }
-
-.add-button .material-icons {
-  margin-right: 8px;
-}
-
-/* Content Layout */
 .content-wrapper {
   display: flex;
-  gap: 16px; /* Reduced gap from 32px to 16px */
+  gap: 20px;
+  min-height: calc(100vh - 100px);
 }
-
 .patient-list-panel {
-  width: 33.333333%;
+  flex-basis: 350px;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
-
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
 .panel-title {
   font-size: 20px;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 16px;
+  color: #333;
+  margin: 0;
 }
-
 .patient-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px; /* Reduced gap between list items */
+  flex-grow: 1;
+  overflow-y: auto;
 }
-
 .patient-list-item {
   display: flex;
   align-items: center;
-  padding: 12px;
+  gap: 15px;
+  padding: 10px;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
-
-.patient-list-item:hover {
-  background-color: #f9fafb;
-}
-
+.patient-list-item:hover,
 .patient-list-item.active {
-  background-color: #eef2ff;
-  border-left: 4px solid #4f46e5;
+  background-color: #f0f0f0;
 }
-
 .patient-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 9999px;
-  margin-right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
-
 .patient-name {
   font-weight: 600;
-  color: #1f2937;
-}
-
-.patient-last-visit {
+  margin-bottom: 2px;
   font-size: 14px;
-  color: #6b7280;
 }
-
-/* Pagination */
+.patient-last-visit {
+  font-size: 12px;
+  color: #888;
+}
 .pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 16px;
+  margin-top: 15px;
 }
-
 .page-button {
-  background-color: #4f46e5;
-  color: #fff;
-  padding: 8px 16px;
+  background-color: #f0f0f0;
   border: none;
+  padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
-
-.page-button:hover {
-  background-color: #4338ca;
-}
-
 .page-button:disabled {
-  background-color: #d1d5db;
+  opacity: 0.5;
   cursor: not-allowed;
 }
-
-.page-info {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-/* Patient Details Panel */
 .patient-details-panel {
-  flex: 1;
+  flex-grow: 1;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.select-prompt {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 20px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+  flex-direction: column;
+}
+.empty-state {
   text-align: center;
-  color: #6b7280;
-  padding: 32px;
+  padding: 50px;
+  color: #888;
 }
-
 .details-header {
-  padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
 }
-
 .flex-center {
   display: flex;
   align-items: center;
+  gap: 15px;
 }
-
 .details-avatar {
-  width: 96px;
-  height: 96px;
-  border-radius: 9999px;
-  margin-right: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
 }
-
 .details-name {
   font-size: 24px;
-  font-weight: 700;
-  color: #1f2937;
+  font-weight: 600;
+  color: #333;
 }
-
 .details-id {
-  color: #4b5563;
+  font-size: 14px;
+  color: #888;
 }
-
 .vip-status {
   display: flex;
   align-items: center;
-  margin-top: 8px;
-  color: #4b5563;
+  gap: 5px;
+  color: gold;
+  font-size: 14px;
 }
-
-.vip-status .material-icons {
-  color: #fcd34d;
-}
-
 .vip-text {
-  margin-left: 4px;
+  font-weight: 600;
 }
-
 .action-buttons {
-  margin-left: auto;
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
-
 .action-button {
-  color: #6b7280;
-  padding: 8px;
-  border-radius: 9999px;
-  background-color: transparent;
+  background-color: #eee;
   border: none;
-  transition: background-color 0.2s, color 0.2s;
+  padding: 8px;
+  border-radius: 50%;
   cursor: pointer;
 }
-
 .action-button:hover {
-  background-color: #f3f4f6;
-  color: #4f46e5;
+  background-color: #ddd;
 }
-
 .delete-button {
   color: #ef4444;
 }
-
-.delete-button:hover {
-  background-color: #fef2f2;
-  color: #dc2626;
-}
-
 .details-body {
-  padding: 24px;
+  flex-grow: 1;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
-
 .tabs-container {
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 24px;
+  margin-bottom: 15px;
 }
-
 .tabs-nav {
   display: flex;
-  gap: 32px;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 20px;
 }
-
 .tab-link {
-  white-space: nowrap;
-  padding: 16px 4px;
-  border-bottom: 2px solid transparent;
-  font-weight: 500;
-  font-size: 14px;
-  color: #6b7280;
+  padding: 10px 15px;
   text-decoration: none;
-  transition: color 0.2s, border-color 0.2s;
-  cursor: pointer;
+  color: #888;
+  font-weight: 500;
+  transition: all 0.2s;
 }
-
-.tab-link:hover {
-  color: #4b5563;
-  border-color: #d1d5db;
+.tab-active {
+  color: #4b3c97;
+  border-bottom: 2px solid #4b3c97;
 }
-
-.tab-link.tab-active {
-  color: #4f46e5;
-  border-color: #4f46e5;
-}
-
-.tab-content {
-  overflow-y: auto;
-  max-height: 500px; /* Adjust as needed */
-  padding-right: 15px; /* for scrollbar */
-}
-
-/* Tab-specific content styles */
 .grid-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px 32px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
-
-.info-item-full {
-  grid-column: span 2;
+.info-item {
+  display: flex;
+  flex-direction: column;
 }
-
 .info-label {
   font-size: 14px;
-  font-weight: 600;
-  color: #6b7280;
+  font-weight: 500;
+  color: #888;
   margin-bottom: 4px;
 }
-
 .info-text {
-  color: #1f2937;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
 }
-
+.info-item-full {
+  grid-column: 1 / -1;
+}
 .concern-tags {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 8px;
 }
-
 .concern-tag {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: #e6f7ff;
+  color: #1890ff;
+  padding: 4px 10px;
+  border-radius: 12px;
   font-size: 12px;
-  font-weight: 500;
-  padding: 2px 10px;
-  border-radius: 9999px;
 }
-
-.info-label-members {
-  font-size: 14px;
-  font-weight: 600;
-  color: #6b7280;
-  margin-bottom: 8px;
+.tab-scroll-container {
+  flex-grow: 1;
+  overflow-y: auto;
 }
-
-.family-members {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.member-card {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  border-radius: 8px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-}
-
-.member-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 9999px;
-  margin-right: 12px;
-}
-
-.member-name {
-  font-weight: 500;
-  color: #1f2937;
-}
-
-.member-relation {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.add-member-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 9999px;
-  background-color: #e5e7eb;
-  color: #4b5563;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.add-member-button:hover {
-  background-color: #d1d5db;
-}
-
 .appointment-item {
   display: flex;
   align-items: center;
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  gap: 15px;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
 }
-
-.appointment-item:last-child {
-  border-bottom: none;
-}
-
 .appointment-date {
-  font-weight: 600;
   font-size: 14px;
-  color: #4f46e5;
-  width: 120px;
-  flex-shrink: 0;
+  font-weight: 600;
+  color: #4b3c97;
 }
-
 .appointment-details {
-  flex: 1;
+  flex-grow: 1;
 }
-
 .appointment-title {
-  font-weight: 500;
-  color: #1f2937;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
-
 .appointment-time {
   font-size: 14px;
-  color: #6b7280;
-  margin-top: 4px;
+  color: #888;
 }
 
-/* Modal Styles */
+/* Modal styles */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
-
 .modal {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 1200px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 900px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
 }
-
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
 }
-
 .modal-header h3 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1f2937;
   margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
 }
-
 .close-button {
   background: none;
   border: none;
-  font-size: 28px;
-  font-weight: 300;
+  font-size: 24px;
   cursor: pointer;
-  color: #6b7280;
-  transition: color 0.2s;
+  color: #888;
 }
-
-.close-button:hover {
-  color: #ef4444;
-}
-
 .modal-body {
   padding: 24px;
   overflow-y: auto;
   flex-grow: 1;
 }
-
 .form-section {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
-
 .form-section h4 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   border-bottom: 1px solid #e5e7eb;
   padding-bottom: 8px;
 }
-
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
 }
-
 .form-group label {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: #4b5563;
   margin-bottom: 4px;
 }
-
 .form-group input,
 .form-group select {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  padding: 8px 10px;
+  border: 1px solid #e0e0e0;
   border-radius: 6px;
-  font-size: 16px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background-color: #f9fafb;
+  font-size: 14px;
 }
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 2px #eef2ff;
-}
-
-.form-group input:disabled {
-  background-color: #e5e7eb;
-  cursor: not-allowed;
-}
-
 .modal-footer {
-  padding: 24px;
-  border-top: 1px solid #e5e7eb;
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
   display: flex;
   justify-content: flex-end;
 }
-
 .save-button {
-  background-color: #4f46e5;
+  background-color: #4b3c97;
   color: #fff;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 10px 20px;
   border: none;
-  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-weight: 500;
 }
-
 .save-button:hover {
-  background-color: #4338ca;
+  background-color: #3a2e7a;
 }
 </style>
