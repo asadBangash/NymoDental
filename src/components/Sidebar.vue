@@ -29,6 +29,12 @@
       title="Chart"
     ></i>
     <i
+      class="fas fa-book"
+      :class="{ active: active === 'notes' }"
+      @click="$emit('navigate', 'notes')"
+      title="Clinical Notes"
+    ></i>
+    <i
       class="fas fa-folder-open"
       :class="{ active: active === 'files' }"
       @click="$emit('navigate', 'files')"

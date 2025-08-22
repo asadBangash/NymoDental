@@ -31,6 +31,8 @@ export default {
           return "Appointments";
         case "chart":
           return "Chart";
+        case "notes":
+          return "Clinical Notes & Treatment Plan";
         case "files":
           return "File Storage";
         case "staff":

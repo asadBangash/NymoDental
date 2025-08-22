@@ -1,1212 +1,1537 @@
 <template>
-  <div class="app-container">
-    <div class="main-layout">
-      <div class="sidebar">
-        <div class="button-group">
-          <button
-            v-for="view in ['PD', 'PTD', 'DD', 'DTD']"
-            :key="view"
-            :class="{ done: selectedView === view }"
-            @click="selectedView = view"
-          >
-            {{ view }}
-          </button>
-        </div>
-
-        <div class="button-group" style="margin-top: 10px">
-          <button
-            :class="{ done: selectedListView === 'treatmentList' }"
-            @click="selectedListView = 'treatmentList'"
-          >
-            Treatment List
-          </button>
-          <button
-            :class="{ done: selectedListView === 'plans' }"
-            @click="selectedListView = 'plans'"
-          >
-            Plans
-          </button>
-        </div>
-
-        <div v-if="selectedListView === 'treatmentList'">
-          <h2>Treatment List</h2>
-          <div class="search-container">
-            <span class="material-icons icon">search</span>
-            <input type="text" placeholder="Search..." class="search-input" />
+  <div class="main-container">
+    <main class="content-container">
+      <div class="card patient-info">
+        <div class="patient-header">
+          <div>
+            <h2 class="patient-name">Patient: {{ patient.name }}</h2>
+            <p class="patient-details">
+              DOB: {{ patient.dob }} | Patient ID: {{ patient.id }} | Last Visit:
+              {{ patient.lastVisit }}
+            </p>
           </div>
-
-          <ul class="treatment-list">
-            <li
-              v-for="treatment in treatments"
-              :key="treatment.id"
-              :class="{ active: treatment.id === selectedTreatmentId }"
-              @click="selectTreatment(treatment.id)"
-            >
-              ⭐ {{ treatment.name }}
-            </li>
-          </ul>
-        </div>
-
-        <div v-else-if="selectedListView === 'plans'">
-          <h2>Plans</h2>
-          <div class="search-container">
-            <span class="material-icons icon">search</span>
-            <input type="text" placeholder="Search..." class="search-input" />
-          </div>
-
-          <ul class="treatment-list">
-            <li
-              v-for="plan in plans"
-              :key="plan.id"
-              :class="{ active: plan.id === selectedPlanId }"
-              @click="selectPlan(plan.id)"
-            >
-              ⭐ {{ plan.name }}
-            </li>
-          </ul>
+          <!-- <div class="button-group">
+            <button class="btn secondary">View History</button>
+            <button class="btn primary">
+              <span class="material-symbols-outlined add-icon">add</span> New Entry
+            </button>
+          </div> -->
         </div>
       </div>
 
-      <div class="content">
-        <div class="custom-jaw-chart">
-          <div class="jaw-labels">
-            <span>R</span>
-            <span>L</span>
-          </div>
-
-          <div class="number-row">
-            <div class="flex-numbers">
-              <span>8</span><span>7</span><span>6</span><span>5</span><span>4</span
-              ><span>3</span><span>2</span><span>1</span>
-            </div>
-            <div class="flex-numbers">
-              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span
-              ><span>6</span><span>7</span><span>8</span>
-            </div>
-          </div>
-
-          <div class="jaw upper">
-            <div class="tooth-row">
-              <div v-for="n in 16" :key="'u' + n" class="tooth upper-tooth">
-                <div class="surface top"></div>
-                <div class="surface right"></div>
-                <div class="surface bottom"></div>
-                <div class="surface left"></div>
-                <div class="center"></div>
-                <div class="root upper-root" v-if="n <= 5 || n >= 12"></div>
-                <div class="molar-root molar-root-upper" v-else>
-                  <div class="r1"></div>
-                  <div class="r2"></div>
-                  <div v-if="n === 1 || n === 16" class="r3"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="jaw lower">
-            <div class="tooth-row">
-              <div v-for="n in 16" :key="'l' + n" class="tooth lower-tooth">
-                <div class="surface top"></div>
-                <div class="surface right"></div>
-                <div class="surface bottom"></div>
-                <div class="surface left"></div>
-                <div class="center"></div>
-                <div class="root lower-root" v-if="n <= 5 || n >= 12"></div>
-                <div class="molar-root molar-root-lower" v-else>
-                  <div class="r1"></div>
-                  <div class="r2"></div>
-                  <div v-if="n === 1 || n === 16" class="r3"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="number-row bottom">
-            <div class="flex-numbers">
-              <span>8</span><span>7</span><span>6</span><span>5</span><span>4</span
-              ><span>3</span><span>2</span><span>1</span>
-            </div>
-            <div class="flex-numbers">
-              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span
-              ><span>6</span><span>7</span><span>8</span>
-            </div>
-          </div>
-
-          <div class="jaw-labels bottom">
-            <span>R</span>
-            <span>L</span>
+      <div class="card dental-chart">
+        <div class="chart-header">
+          <h3 class="chart-title">Dental Chart</h3>
+          <div class="mode-switch">
+            <button
+              :class="{ 'mode-btn': true, active: chartMode === 'adult' }"
+              @click="switchChartMode('adult')"
+            >
+              Adult (FDI)
+            </button>
+            <button
+              :class="{ 'mode-btn': true, active: chartMode === 'pediatric' }"
+              @click="switchChartMode('pediatric')"
+            >
+              Pediatric
+            </button>
           </div>
         </div>
-
-        <div class="btn-group">
-          <div class="grow"></div>
-          <div class="links">
-            <a href="#" @click.prevent="openModal('Images')">Images</a>
-            <a href="#" @click.prevent="openModal('BPE')">BPE</a>
-            <a href="#" @click.prevent="openModal('History')">History</a>
-            <a href="#" @click.prevent="openModal('Base Chart')">Base Chart</a>
-            <a href="#" @click.prevent="openModal('Ortho')">Ortho</a>
-          </div>
-        </div>
-
-        <div v-if="selectedView === 'PD' && selectedListView === 'treatmentList'">
-          <div class="table-container">
-            <div v-if="selectedTreatment && selectedTreatment.tableData">
-              <table>
-                <thead>
-                  <tr>
-                    <th>APPT.</th>
-                    <th>EXAM</th>
-                    <th>{{ selectedTreatment.name }}</th>
-                    <th class="text-right">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(row, index) in selectedTreatment.tableData" :key="index">
-                    <td>
-                      <input type="checkbox" :checked="!!row.appt" />
-                      {{ row.appt }}
-                    </td>
-                    <td>
-                      <input type="checkbox" :checked="!!row.exam" />
-                      {{ row.exam }}
-                    </td>
-                    <td>
-                      {{ row.patient }}
-                      <small v-if="row.date">{{ row.date }}</small>
-                    </td>
-                    <td class="text-right">
-                      <span v-if="row.status" class="status">{{ row.status }}</span>
-                      <span v-else>{{ row.price }}</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="table-footer">
-                <div>
-                  <strong>Total Price: £186.00</strong>
-                  <span class="text-muted">Uncharged: £186.00</span>
-                </div>
-                <div class="actions">
-                  <button class="secondary">Charge</button>
-                  <button class="primary">Complete treatment plan</button>
-                </div>
-              </div>
-            </div>
-            <div v-else>
-              <p>No table data available for this treatment.</p>
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="selectedView === 'PD' && selectedListView === 'plans'">
-          <div class="plan-details">
-            <div v-if="selectedPlan">
-              <h3>Plan: {{ selectedPlan.name }}</h3>
-              <p>{{ selectedPlan.description }}</p>
-              <h4>Procedures:</h4>
-              <ul>
-                <li v-for="(proc, index) in selectedPlan.procedures" :key="index">
-                  {{ proc }}
-                </li>
-              </ul>
-              <div
-                v-if="selectedPlan.images && selectedPlan.images.length > 0"
-                class="plan-images"
-              >
-                <h5>Related Images:</h5>
+        <div class="chart-grid-container">
+          <div class="chart-grid">
+            <div class="jaw-row">
+              <div class="quadrant quadrant-right">
                 <div
-                  class="image-wrapper small"
-                  v-for="(img, index) in selectedPlan.images"
-                  :key="index"
+                  v-for="tooth in currentTeeth.slice(0, 8)"
+                  :key="tooth.number"
+                  :class="getToothClass(tooth)"
+                  @click="selectTooth(tooth)"
                 >
-                  <img :src="img.url" :alt="img.label" />
-                  <span class="img-label">{{ img.label }}</span>
+                  <span class="tooth-number">{{ tooth.number }}</span>
+                  <div v-if="tooth.hasNote" class="note-indicator">
+                    <div class="note-dot"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="quadrant quadrant-left">
+                <div
+                  v-for="tooth in currentTeeth.slice(8, 16)"
+                  :key="tooth.number"
+                  :class="getToothClass(tooth)"
+                  @click="selectTooth(tooth)"
+                >
+                  <span class="tooth-number">{{ tooth.number }}</span>
+                  <div v-if="tooth.hasNote" class="note-indicator">
+                    <div class="note-dot"></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div v-else>
-              <p>No plan selected.</p>
+            <div class="jaw-row">
+              <div class="quadrant quadrant-right">
+                <div
+                  v-for="tooth in currentTeeth.slice(16, 24)"
+                  :key="tooth.number"
+                  :class="getToothClass(tooth)"
+                  @click="selectTooth(tooth)"
+                >
+                  <span class="tooth-number">{{ tooth.number }}</span>
+                  <div v-if="tooth.hasNote" class="note-indicator">
+                    <div class="note-dot"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="quadrant quadrant-left">
+                <div
+                  v-for="tooth in currentTeeth.slice(24, 32)"
+                  :key="tooth.number"
+                  :class="getToothClass(tooth)"
+                  @click="selectTooth(tooth)"
+                >
+                  <span class="tooth-number">{{ tooth.number }}</span>
+                  <div v-if="tooth.hasNote" class="note-indicator">
+                    <div class="note-dot"></div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div v-else-if="selectedView === 'PTD'">
-          <div class="ptd-content">
-            <h3>PTD View</h3>
-            <p>
-              This is the content for the PTD (Planned Treatment Done) view. You can add
-              specific components and data here.
-            </p>
-          </div>
-        </div>
-
-        <div v-else-if="selectedView === 'DD'">
-          <div class="dd-content">
-            <h3>DD View</h3>
-            <p>
-              This is the content for the DD (Done) view. This section will show all
-              completed treatments.
-            </p>
-          </div>
-        </div>
-
-        <div v-else-if="selectedView === 'DTD'">
-          <div class="dtd-content">
-            <h3>DTD View</h3>
-            <p>
-              This is the content for the DTD (Done Treatment Done) view. You can
-              customize the layout here.
-            </p>
           </div>
         </div>
       </div>
 
-      <aside class="right-panel">
-        <div class="panel-header">
-          <h2>Visuals</h2>
+      <div class="legend">
+        <h4 class="legend-title">Legend:</h4>
+        <div class="legend-item">
+          <div class="legend-box decay"></div>
+          <span>Decay</span>
         </div>
-        <div class="images">
-          <div
-            class="image-wrapper"
-            v-for="(image, index) in rightPanelImages"
-            :key="index"
-          >
-            <img :src="image.url" :alt="image.label" />
-            <span class="img-label">{{ image.label }}</span>
-          </div>
+        <div class="legend-item">
+          <div class="legend-box filling"></div>
+          <span>Filling</span>
         </div>
-      </aside>
-    </div>
+        <div class="legend-item">
+          <div class="legend-box crown"></div>
+          <span>Crown</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box implant"></div>
+          <span>Implant</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box missing"></div>
+          <span>Missing</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-note-dot"></div>
+          <span>Note</span>
+        </div>
+      </div>
 
-    <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>{{ modalTitle }}</h3>
-          <span class="close-btn" @click="closeModal">&times;</span>
+      <div class="navigation-area">
+        <div class="navigation-controls">
+          <button
+            :class="{ 'nav-btn': true, 'nav-btn-active': activeView === 'images' }"
+            @click="selectView('images')"
+          >
+            Images
+          </button>
+          <button
+            :class="{ 'nav-btn': true, 'nav-btn-active': activeView === 'history' }"
+            @click="selectView('history')"
+          >
+            History
+          </button>
+          <button
+            :class="{ 'nav-btn': true, 'nav-btn-active': activeView === 'bpe' }"
+            @click="selectView('bpe')"
+          >
+            BPE
+          </button>
+          <button
+            :class="{ 'nav-btn': true, 'nav-btn-active': activeView === 'base' }"
+            @click="selectView('base')"
+          >
+            Base Chart
+          </button>
+          <button
+            :class="{ 'nav-btn': true, 'nav-btn-active': activeView === 'ortho' }"
+            @click="selectView('ortho')"
+          >
+            Ortho
+          </button>
         </div>
-        <div class="modal-body">
-          <div v-if="modalTitle === 'Images'">
-            <div class="images modal-images">
+        <div class="dynamic-content">
+          <div v-if="activeView === 'images'">
+            <h4 class="content-title">
+              Imaging for Tooth #{{ activeTooth ? activeTooth.number : "N/A" }}
+            </h4>
+            <div v-if="activeTooth && activeTooth.images.length > 0" class="image-grid">
               <div
-                class="image-wrapper large"
-                v-for="(image, index) in rightPanelImages"
+                class="image-item"
+                v-for="(image, index) in activeTooth.images"
                 :key="index"
               >
-                <img :src="image.url" :alt="image.label" />
-                <span class="img-label">{{ image.label }}</span>
+                <img :alt="image.description" class="image-preview" :src="image.src" />
+                <div class="image-overlay">
+                  <span class="material-symbols-outlined zoom-icon">zoom_in</span>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <p class="no-content-text">
+                No images available for this tooth. Please select a tooth with an image or
+                upload one.
+              </p>
+            </div>
+          </div>
+          <div v-if="activeView === 'history'">
+            <h4 class="content-title">Patient History</h4>
+            <div class="history-list">
+              <div class="history-item">
+                <p class="history-date">03/15/2024</p>
+                <p class="history-description">
+                  Routine check-up and cleaning. No new issues found.
+                </p>
+              </div>
+              <div class="history-item">
+                <p class="history-date">10/21/2023</p>
+                <p class="history-description">
+                  Filling placed on tooth #17 due to minor decay.
+                </p>
+              </div>
+              <div class="history-item">
+                <p class="history-date">05/01/2023</p>
+                <p class="history-description">
+                  Initial consultation. Crown recommended for tooth #18.
+                </p>
               </div>
             </div>
           </div>
-          <div v-else-if="modalTitle === 'BPE'">
-            <h4>Basic Periodontal Examination Scores</h4>
-            <div class="bpe-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Sextant</th>
-                    <th>Score</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Upper Right</td>
-                    <td>1</td>
-                    <td>Bleeding on probing</td>
-                  </tr>
-                  <tr>
-                    <td>Upper Anterior</td>
-                    <td>2</td>
-                    <td>Calculus present</td>
-                  </tr>
-                  <tr>
-                    <td>Upper Left</td>
-                    <td>3</td>
-                    <td>Probing depth 4-5mm</td>
-                  </tr>
-                  <tr>
-                    <td>Lower Left</td>
-                    <td>0</td>
-                    <td>Healthy</td>
-                  </tr>
-                  <tr>
-                    <td>Lower Anterior</td>
-                    <td>1</td>
-                    <td>Bleeding on probing</td>
-                  </tr>
-                  <tr>
-                    <td>Lower Right</td>
-                    <td>2</td>
-                    <td>Calculus present</td>
-                  </tr>
-                </tbody>
-              </table>
-              <p class="bpe-key">
-                **Key:** 0 = Healthy, 1 = Bleeding on probing, 2 = Calculus present, 3 =
-                Probing depth 4-5mm, 4 = Probing depth 6mm+, * = Furcation involvement.
+          <div v-if="activeView === 'bpe'">
+            <h4 class="content-title">BPE Chart</h4>
+            <p class="bpe-text">
+              **Basic Periodontal Examination (BPE)**: 
+              BPE is a simple, rapid screening tool used to assess periodontal health.
+              <br /><br />
+              **Scores for today's visit (03/15/2024):**
+              <ul class="bpe-list">
+                <li>**Sextant 1 (17-14):** 1</li>
+                <li>**Sextant 2 (13-23):** 0</li>
+                <li>**Sextant 3 (24-27):** 1</li>
+                <li>**Sextant 4 (37-34):** 2</li>
+                <li>**Sextant 5 (33-43):** 1</li>
+                <li>**Sextant 6 (44-47):** 2</li>
+              </ul>
+              *Note: Score 2 indicates calculus present, requiring removal. Score 1 indicates bleeding on probing.*
+            </p>
+          </div>
+          <div v-if="activeView === 'base'">
+            <h4 class="content-title">Base Chart</h4>
+            <div class="base-chart-content">
+              <p class="base-text">
+                **Patient's Baseline Dental Condition (Initial Visit: 05/01/2023):**
+              </p>
+              <ul class="base-list">
+                <li>**Existing Conditions:**</li>
+                <li>- Tooth #18: Existing Crown.</li>
+                <li>- Tooth #26: Implant.</li>
+                <li>- Tooth #28: Missing.</li>
+                <li>- Tooth #17: Small occlusal decay noted.</li>
+              </ul>
+              <p class="base-text">
+                This chart serves as a foundation for tracking all future dental work and changes.
               </p>
             </div>
           </div>
-          <div v-else-if="modalTitle === 'History'">
-            <h4>Patient Medical History</h4>
-            <p>
-              **Allergies:** Penicillin<br />
-              **Medical Conditions:** Controlled hypertension, Mild asthma<br />
-              **Medications:** Lisinopril, Albuterol (as needed)<br />
-              **Notes:** Patient reports no smoking and infrequent alcohol use.
-            </p>
-          </div>
-          <div v-else-if="modalTitle === 'Base Chart'">
-            <h4>Base Dental Chart</h4>
-            <div class="chart-content">
-              <p>
-                This section shows the permanent and deciduous dentition, along with any
-                existing restorations, missing teeth, or other conditions. This is a
-                comprehensive view for planning purposes.
+          <div v-if="activeView === 'ortho'">
+            <h4 class="content-title">Orthodontic Chart</h4>
+            <div class="ortho-content">
+              <p class="ortho-text">
+                **Orthodontic Assessment:**
               </p>
-              <img
-                :src="'https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M'"
-                alt="Detailed Dental Chart"
-                style="width: 100%; border-radius: 8px"
-              />
-              <p>
-                **Annotations:**<br />
-                - **#18:** Missing<br />
-                - **#14:** Amalgam filling<br />
-                - **#25:** Crown<br />
-                - **#36:** Root canal completed
+              <ul class="ortho-list">
+                <li>**Crowding:** Mild crowding in the lower anterior region.</li>
+                <li>**Occlusion:** Class I occlusion with no crossbite.</li>
+                <li>**Notes:** No immediate orthodontic treatment required. Patient to be monitored for any changes during routine visits.</li>
+              </ul>
+              <p class="ortho-text">
+                *Patient declined orthodontic referral on 03/15/2024.*
               </p>
             </div>
-          </div>
-          <div v-else-if="modalTitle === 'Ortho'">
-            <h4>Orthodontic Treatment Plan</h4>
-            <p>
-              **Current Plan:** Braces for upper and lower arches.<br />
-              **Objective:** Correct Class II malocclusion and close diastema between
-              central incisors.<br />
-              **Estimated Duration:** 18-24 months.<br />
-              **Appointments:** Monthly adjustments scheduled.
-            </p>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from "vue";
+<script setup>
+import { ref, watch, computed } from "vue";
 
-export default {
-  name: "DentalRecordsApp",
-  data() {
-    return {
-      filterText: "",
-      selectedView: "PD", // Tracks PD, PTD, DD, DTD
-      selectedListView: "treatmentList", // Tracks Treatment List and Plans
-      highlightedTeeth: ["UR6"],
-      patient: ref(null),
-      isModalOpen: false,
-      modalTitle: "",
+const patient = ref({
+  name: "Emily Carter",
+  dob: "05/12/1988",
+  id: "123456",
+  lastVisit: "03/15/2024",
+});
 
-      treatments: [
-        {
-          id: 1,
-          name: "01201 Exam & Diag, Limited Oral...",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 1",
-              exam: "Acquire Images",
-              patient: "Al Thomason",
-              date: "Fri 13 Sep at 9:00",
-              price: "£50.00",
-              status: "Arrived",
-            },
-            {
-              appt: "",
-              exam: "Fri 11 Oct 24",
-              patient: "AM (Private)",
-              date: "",
-              price: "£0.00",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Exam & Diag",
-            },
-          ],
-        },
-        {
-          id: 2,
-          name: "02102 Radiographs, Regional/Loc...",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 2",
-              exam: "Full Mouth X-Ray",
-              patient: "Jane Doe",
-              date: "Tue 10 Sep at 10:00",
-              price: "£75.00",
-              status: "In Progress",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Full Mouth X-Ray",
-            },
-          ],
-        },
-        {
-          id: 3,
-          name: "21223 Non Bonded, Permanent M...",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 3",
-              exam: "Check Gums",
-              patient: "John Smith",
-              date: "Mon 09 Sep at 11:00",
-              price: "£60.00",
-              status: "Completed",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Molar Restoration",
-            },
-          ],
-        },
-        {
-          id: 4,
-          name: "56112 Dentures, Replication, Prov...",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 4",
-              exam: "Denture Fitting",
-              patient: "Emily White",
-              date: "Thu 12 Sep at 13:00",
-              price: "£150.00",
-              status: "Scheduled",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Denture Fitting",
-            },
-          ],
-        },
-        {
-          id: 5,
-          name: "100 Exam",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 5",
-              exam: "General Exam",
-              patient: "Michael Brown",
-              date: "Wed 11 Sep at 14:00",
-              price: "£40.00",
-              status: "Scheduled",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "General View",
-            },
-          ],
-        },
-        {
-          id: 6,
-          name: "101 Exam & Scale & Polish",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 6",
-              exam: "Cleaning",
-              patient: "Sarah Connor",
-              date: "Fri 13 Sep at 15:00",
-              price: "£85.00",
-              status: "Scheduled",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Scale & Polish",
-            },
-          ],
-        },
-        {
-          id: 7,
-          name: "102 New Patient Exam",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 7",
-              exam: "New Patient Consult",
-              patient: "Kyle Reese",
-              date: "Mon 16 Sep at 10:00",
-              price: "£95.00",
-              status: "Scheduled",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "New Patient",
-            },
-          ],
-        },
-        {
-          id: 8,
-          name: "103 Review",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 8",
-              exam: "Follow-up",
-              patient: "T-800",
-              date: "Tue 17 Sep at 11:00",
-              price: "£30.00",
-              status: "Scheduled",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Review",
-            },
-          ],
-        },
-        {
-          id: 9,
-          name: "104 Assessment & Advice",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 9",
-              exam: "Assessment",
-              patient: "Dr. Silberman",
-              date: "Wed 18 Sep at 12:00",
-              price: "£45.00",
-              status: "Scheduled",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Assessment",
-            },
-          ],
-        },
-        {
-          id: 10,
-          name: "105 Small Radiograph",
-          category: "PD",
-          tableData: [
-            {
-              appt: "Appt. 10",
-              exam: "Small X-Ray",
-              patient: "Miles Dyson",
-              date: "Thu 19 Sep at 13:00",
-              price: "£25.00",
-              status: "Scheduled",
-            },
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Small Radiograph",
-            },
-          ],
-        },
-      ],
+const chartMode = ref("adult");
+const activeTooth = ref(null);
+const activeView = ref("images");
 
-      plans: [
-        {
-          id: 1,
-          name: "Crowns & Bridges Plan",
-          description: "This plan includes procedures for dental crowns and bridges.",
-          procedures: [
-            "Preparation of tooth for crown",
-            "Placement of temporary crown",
-            "Fitting of permanent crown",
-            "Bridge placement and cementing",
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Crown",
-            },
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Bridge",
-            },
-          ],
-        },
-        {
-          id: 2,
-          name: "Root Canal Treatment Plan",
-          description: "A detailed plan for endodontic treatment of a single tooth.",
-          procedures: [
-            "Diagnostic X-ray and assessment",
-            "Access cavity preparation",
-            "Root canal cleaning and shaping",
-            "Obturation and final restoration",
-          ],
-          images: [
-            {
-              url:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
-              label: "Root Canal",
-            },
-          ],
-        },
-      ],
-      selectedPlanId: 1,
-      selectedTreatmentId: 1,
-    };
+const adultTeeth = ref([
+  // Upper Right Quadrant (18-11)
+  {
+    number: 18,
+    isCrown: true,
+    isImplant: false,
+    isMissing: false,
+    hasNote: true,
+    surfaces: null,
+    images: [
+      {
+        src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
+        description: "Crown x-ray",
+      },
+      {
+        src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
+        description: "Clinical photo",
+      },
+    ],
   },
-  computed: {
-    selectedTreatment() {
-      return this.treatments.find((t) => t.id === this.selectedTreatmentId);
+  {
+    number: 17,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: true, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
     },
-    selectedPlan() {
-      return this.plans.find((p) => p.id === this.selectedPlanId);
-    },
-    rightPanelImages() {
-      if (this.selectedListView === "plans") {
-        return this.selectedPlan ? this.selectedPlan.images : [];
-      } else {
-        return this.selectedTreatment ? this.selectedTreatment.images : [];
-      }
-    },
+    images: [
+      {
+        src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDYIZ42a9f8CiUzhZNrVsaPFAPe2HfUaSpakjtMjDiY38QtxGVR_iFmBa7gRHPn50m5l9UUY5LebMuIZNuBLulA8wdvMup_x1SKKxg51Uin0bf0b6MpUb9d31lCoQQY56vhAkzuYH4870xODgbrbExVtuiaOyvNQvHNblo8zgDJh5Bm8CkaXyH8bIaNeWvk4tMfYEQHhkN0DW3_j9ujjpF83Ci7TbIo22yLXsV2FkWSE5vP6ux00U3phGhbF9MGEu_yNPa8lbfCy3M",
+        description: "Filling x-ray",
+      },
+    ],
   },
-  methods: {
-    selectTreatment(id) {
-      this.selectedTreatmentId = id;
+  {
+    number: 16,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
     },
-    selectPlan(id) {
-      this.selectedPlanId = id;
-    },
-    highlightTooth(toothCode) {
-      return this.highlightedTeeth.includes(toothCode) ? "highlight" : "";
-    },
-    openModal(title) {
-      this.modalTitle = title;
-      this.isModalOpen = true;
-    },
-    closeModal() {
-      this.isModalOpen = false;
-    },
+    images: [],
   },
+  {
+    number: 15,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 14,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: true },
+    },
+    images: [
+      {
+        src: "https://i.imgur.com/4t9zLh5.jpg",
+        description: "Decay x-ray",
+      },
+    ],
+  },
+  {
+    number: 13,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 12,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 11,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  // Upper Left Quadrant (21-28)
+  {
+    number: 21,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 22,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 23,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 24,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 25,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 26,
+    isCrown: false,
+    isImplant: true,
+    isMissing: false,
+    hasNote: false,
+    surfaces: null,
+    images: [
+      {
+        src: "https://i.imgur.com/gK9x80Z.jpg",
+        description: "Implant x-ray",
+      },
+      {
+        src: "https://i.imgur.com/9nFkQW7.jpg",
+        description: "Clinical photo",
+      },
+    ],
+  },
+  {
+    number: 27,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 28,
+    isCrown: false,
+    isImplant: false,
+    isMissing: true,
+    hasNote: false,
+    surfaces: null,
+    images: [
+      {
+        src: "https://i.imgur.com/5E6Qj5P.jpg",
+        description: "Missing tooth x-ray",
+      },
+    ],
+  },
+  // Lower Right Quadrant (48-41)
+  {
+    number: 48,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 47,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 46,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 45,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 44,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 43,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 42,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 41,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  // Lower Left Quadrant (31-38)
+  {
+    number: 31,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 32,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 33,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 34,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 35,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 36,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 37,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 38,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+]);
+
+const pediatricTeeth = ref([
+  // Upper Right Quadrant (55-51)
+  {
+    number: 55,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 54,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 53,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 52,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 51,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  // Upper Left Quadrant (61-65)
+  {
+    number: 61,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 62,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 63,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 64,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 65,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  // Lower Right Quadrant (85-81)
+  {
+    number: 85,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 84,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 83,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 82,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 81,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  // Lower Left Quadrant (71-75)
+  {
+    number: 71,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 72,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 73,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 74,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+  {
+    number: 75,
+    isCrown: false,
+    isImplant: false,
+    isMissing: false,
+    hasNote: false,
+    surfaces: {
+      occlusal: { hasFilling: false, hasDecay: false },
+      mesial: { hasFilling: false, hasDecay: false },
+    },
+    images: [],
+  },
+]);
+
+const currentTeeth = computed(() => {
+  return chartMode.value === "adult" ? adultTeeth.value : pediatricTeeth.value;
+});
+
+const switchChartMode = (mode) => {
+  chartMode.value = mode;
+  activeTooth.value = null;
+  activeView.value = "images";
 };
+
+const selectTooth = (tooth) => {
+  activeTooth.value = tooth;
+  activeView.value = "images";
+};
+
+const selectView = (view) => {
+  activeView.value = view;
+};
+
+const getToothClass = (tooth) => {
+  const classes = ["tooth"];
+  if (tooth.number === activeTooth.value?.number) {
+    classes.push("active");
+  }
+  if (tooth.isCrown) classes.push("crown");
+  if (tooth.isImplant) classes.push("implant");
+  if (tooth.isMissing) classes.push("missing");
+
+  if (tooth.surfaces?.occlusal?.hasDecay) {
+    classes.push("decay");
+  } else if (tooth.surfaces?.occlusal?.hasFilling) {
+    classes.push("filling");
+  }
+
+  return classes.join(" ");
+};
+
+watch(chartMode, (newMode) => {
+  if (newMode === "adult" && adultTeeth.value.length > 0) {
+    activeTooth.value = adultTeeth.value[0];
+  } else if (newMode === "pediatric" && pediatricTeeth.value.length > 0) {
+    activeTooth.value = pediatricTeeth.value[0];
+  }
+});
+
+if (adultTeeth.value.length > 0) {
+  activeTooth.value = adultTeeth.value[0];
+}
 </script>
 
 <style scoped>
-/*
- * This is the provided CSS. 
- * I haven't changed any of this. 
- * You can add new styles for the new sections (PTD, DD, DTD) as needed.
- */
-.app-container {
-  font-family: "Roboto", sans-serif;
-  background-color: #f7fafc;
-  height: 100vh;
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --background-color: #f3f4f6;
+  --border-color: #d1d5db;
+  --white: #ffffff;
+  --danger-color: #ef4444;
+  --info-color: #3b82f6;
+  --gold-color: #f59e0b;
+  --silver-color: #9ca3af;
+  --grey-color: #6b7280;
+  --decay-color: #ef4444;
+  --filling-color: #3b82f6;
+  --crown-color: #f59e0b;
+  --implant-color: #64748b;
+  --missing-color: #9ca3af;
+  --note-color: #fcd34d;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.main-container {
   display: flex;
   flex-direction: column;
-  width: 1180px;
+  min-height: 100vh;
+  width: 100%;
 }
 
-.search-container {
-  background: #edf2f7;
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  border-radius: 4px;
+.content-container {
+  flex-grow: 1;
+  max-width: 100%;
+  padding: 32px;
 }
 
-.search-input {
-  border: none;
-  background: transparent;
-  margin-left: 0.5rem;
-  outline: none;
+.card {
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 24px;
 }
 
-.main-layout {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
+.patient-info {
+  margin-bottom: 32px;
 }
 
-.sidebar {
-  width: 220px;
-  background-color: #e2e8f0;
-  padding: 1rem;
+.patient-header {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  overflow-y: auto;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+@media (min-width: 640px) {
+  .patient-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.patient-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.patient-details {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
 }
 
 .button-group {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
 }
 
-.button-group button {
-  padding: 0.25rem 0.5rem;
-  border: none;
-  background: #cbd5e0;
-  border-radius: 4px;
-  flex: 1; /* Make buttons fill the space */
-  cursor: pointer;
+@media (min-width: 640px) {
+  .button-group {
+    margin-top: 0;
+  }
 }
 
-.button-group .done {
-  background: #2b6cb0;
-  color: white;
-}
-
-.treatment-list {
-  list-style: none;
-  padding: 0;
-}
-
-.treatment-list li {
-  padding: 0.5rem;
-  cursor: pointer;
-}
-
-.treatment-list li.active {
-  background-color: #2b6cb0;
-  color: white;
-  border-radius: 4px;
-}
-
-.content {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-}
-
-.ptd-content,
-.dd-content,
-.dtd-content,
-.plan-details {
-  background-color: white;
-  padding: 1rem;
+.btn {
+  padding: 8px 16px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition-property: background-color, border-color, color, fill, stroke, opacity,
+    box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 
-.btn-group {
+.btn:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--primary-color);
+}
+
+.primary {
+  background-color: var(--primary-color);
+  color: var(--white);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 8px;
 }
 
-.grow {
-  flex-grow: 1;
+.primary:hover {
+  background-color: var(--primary-hover);
 }
 
-.links a {
-  margin-left: 1rem;
-  color: #2b6cb0;
-  text-decoration: none;
+.secondary {
+  background-color: #f3f4f6;
+  color: #4b5563;
 }
 
-.table-container {
-  background-color: white;
-  padding: 1rem;
+.secondary:hover {
+  background-color: #e5e7eb;
+}
+
+.add-icon {
+  font-size: 16px;
+}
+
+.dental-chart {
+  margin-bottom: 32px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.mode-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f3f4f6;
+  padding: 4px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.table-container table {
+.mode-btn {
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  color: #4b5563;
+}
+
+.mode-btn.active {
+  color: var(--white);
+  background-color: var(--primary-color);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.mode-btn:hover:not(.active) {
+  background-color: var(--white);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.chart-grid-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  border-collapse: collapse;
 }
 
-.table-container th,
-.table-container td {
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.status {
-  background-color: #38a169;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-}
-
-.text-muted {
-  color: #718096;
-  font-size: 0.875rem;
-}
-
-.table-footer {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.actions button {
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.actions .secondary {
-  background-color: #e2e8f0;
-}
-
-.actions .primary {
-  background-color: #2b6cb0;
-  color: white;
-}
-
-.right-panel {
-  width: 250px;
-  background-color: #edf2f7;
-  padding: 1rem;
-  overflow-y: auto;
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.images {
+.chart-grid {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 24px;
+  flex-grow: 0;
+  flex-shrink: 0;
 }
 
-.image-wrapper {
-  position: relative;
-}
-
-.image-wrapper img {
-  width: 100%;
-  border-radius: 4px;
-}
-
-.img-label {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 2px 4px;
-  font-size: 0.75rem;
-  border-radius: 2px;
-}
-
-.custom-jaw-chart {
-  background: #f1f5f9;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
-.jaw-labels,
-.jaw-labels.bottom {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 2rem;
-  color: #4b5563;
-  margin-bottom: 0.5rem;
-}
-
-.number-row {
+.jaw-row {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.number-row.bottom {
-  margin-top: 1rem;
+@media (min-width: 640px) {
+  .jaw-row {
+    gap: 8px;
+  }
 }
 
-.flex-numbers {
+.quadrant {
   display: flex;
-  gap: 0.2rem;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
-.flex-numbers span {
-  width: 40px;
-  text-align: center;
+@media (min-width: 640px) {
+  .quadrant {
+    gap: 6px;
+  }
 }
 
-.jaw {
-  background: #e5e7eb;
-  padding: 0.5rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-}
-
-.tooth-row {
-  display: flex;
-  justify-content: center;
-  gap: 0.2rem;
+.quadrant-right {
+  flex-direction: row-reverse;
 }
 
 .tooth {
   position: relative;
-  width: 40px;
-  height: 40px;
-  border: 1px solid #9ca3af;
-}
-
-.surface {
-  position: absolute;
-  width: 0;
-  height: 0;
-}
-
-.surface.top {
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-bottom: 20px solid white;
-  top: 0;
-  left: 0;
-}
-
-.surface.bottom {
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-top: 20px solid white;
-  bottom: 0;
-  left: 0;
-}
-
-.surface.left {
-  border-top: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-  border-right: 20px solid white;
-  left: 0;
-  top: 0;
-}
-
-.surface.right {
-  border-top: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-  border-left: 20px solid white;
-  right: 0;
-  top: 0;
-}
-
-.center {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 20px;
-  height: 20px;
-  background-color: white;
-  border: 1px solid #9ca3af;
-}
-
-.root.upper-root {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-bottom: 30px solid #f3e8d3;
-  top: -30px;
-  left: 0;
-}
-
-.root.lower-root {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-top: 30px solid #f3e8d3;
-  bottom: -30px;
-  left: 0;
-}
-
-.molar-root-upper,
-.molar-root-lower {
-  position: absolute;
-  width: 40px;
-  height: 30px;
-  overflow: hidden;
-}
-
-.molar-root-upper {
-  top: -30px;
-}
-
-.molar-root-lower {
-  bottom: -30px;
-}
-
-.molar-root-upper > div,
-.molar-root-lower > div {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 13.33px solid transparent;
-  border-right: 13.33px solid transparent;
-}
-
-.molar-root-upper .r1,
-.molar-root-upper .r2,
-.molar-root-upper .r3 {
-  border-bottom: 25px solid #f3e8d3;
-}
-
-.molar-root-lower .r1,
-.molar-root-lower .r2,
-.molar-root-lower .r3 {
-  border-top: 25px solid #f3e8d3;
-}
-
-.molar-root-upper .r1,
-.molar-root-lower .r1 {
-  left: 0;
-}
-
-.molar-root-upper .r2,
-.molar-root-lower .r2 {
-  left: 13.33px;
-}
-
-.molar-root-upper .r3,
-.molar-root-lower .r3 {
-  right: 0;
-}
-
-.plan-images {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.image-wrapper.small {
-  width: 100px;
-  height: auto;
-}
-
-.image-wrapper.small img {
-  width: 100%;
-  height: auto;
-  border-radius: 4px;
-}
-
-/* Modal specific styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 2rem;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  max-width: 800px;
-  width: 90%;
-  position: relative;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  background-color: var(--white);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
-.modal-header h3 {
-  margin: 0;
+@media (min-width: 768px) {
+  .tooth {
+    width: 48px;
+    height: 48px;
+  }
 }
 
-.close-btn {
-  font-size: 1.5rem;
+.tooth-number {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4b5563;
+  position: relative;
+  z-index: 10;
+  transition: transform 0.3s ease-in-out;
+}
+
+.tooth.active,
+.tooth:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+  background-color: #eef2ff;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.tooth.active .tooth-number,
+.tooth:hover .tooth-number {
+  transform: translateY(-2px);
+}
+
+.tooth.crown {
+  background: linear-gradient(to bottom right, #fcd34d, #f59e0b);
+  border-color: #f59e0b;
+  color: var(--white);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.tooth.implant {
+  background: linear-gradient(to bottom right, #cbd5e1, #64748b);
+  border-color: #64748b;
+  color: var(--white);
+  box-shadow: 0 4x 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.tooth.missing {
+  background-color: #d1d5db;
+  border-color: #9ca3af;
+  color: #6b7280;
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.tooth.decay {
+  background-color: var(--decay-color);
+  color: var(--white);
+}
+
+.tooth.filling {
+  background-color: var(--filling-color);
+  color: var(--white);
+}
+
+.note-indicator {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--note-color);
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.note-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #fcd34d;
+  border-radius: 50%;
+}
+
+.card-section {
+  margin-top: 32px;
+  border-top: 1px solid #d1d5db;
+  padding-top: 24px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.legend-title {
+  font-weight: 700;
+  color: #4b5563;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+.legend-note-dot {
+  width: 14px;
+  height: 14px;
+  background-color: var(--note-color);
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  position: relative;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.decay {
+  background-color: var(--decay-color);
+}
+
+.filling {
+  background-color: var(--filling-color);
+}
+
+.crown {
+  background-image: linear-gradient(to bottom right, #fcd34d, #f59e0b);
+}
+
+.implant {
+  background-image: linear-gradient(to bottom right, #cbd5e1, #64748b);
+}
+
+.missing {
+  background-color: var(--missing-color);
+}
+
+.navigation-area {
+  border-top: 1px solid #d1d5db;
+  padding-top: 24px;
+}
+
+.navigation-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.nav-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  transition: all 0.3s ease-in-out;
+  border: none;
+  background-color: #f3f4f6;
+  color: #4b5563;
   cursor: pointer;
 }
 
-.modal-images {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+.nav-btn:hover {
+  background-color: #e5e7eb;
 }
 
-.image-wrapper.large {
+.nav-btn-active {
+  color: var(--white);
+  background-color: var(--primary-color);
+}
+
+.nav-btn-active:hover {
+  background-color: var(--primary-hover);
+}
+
+.dynamic-content {
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.content-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .image-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .image-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.image-item {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.image-preview {
   width: 100%;
   height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transition: transform 0.3s ease-in-out;
 }
 
-.bpe-table table {
-  width: 100%;
-  border-collapse: collapse;
+.image-item:hover .image-preview {
+  transform: scale(1.05);
 }
 
-.bpe-table th,
-.bpe-table td {
-  border: 1px solid #cbd5e0;
-  padding: 0.5rem;
-  text-align: left;
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 8px;
 }
 
-.bpe-key {
-  font-size: 0.8rem;
-  color: #718096;
-  margin-top: 1rem;
+.image-item:hover .image-overlay {
+  opacity: 1;
 }
 
-.chart-content img {
-  margin: 1rem 0;
+.zoom-icon {
+  font-size: 32px;
+  color: var(--white);
+}
+
+.no-content-text {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-item {
+  background-color: var(--white);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.history-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.history-description {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.bpe-text, .base-text, .ortho-text {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.bpe-list, .base-list, .ortho-list {
+  margin: 8px 0 16px 20px;
+  list-style-type: disc;
 }
 </style>

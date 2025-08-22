@@ -20,6 +20,10 @@ import NewAppointment from '../pages/sections/Appointments/Components/NewAppoint
 // Chart module
 import ChartView from '../pages/sections/Chart/ChartView.vue';
 
+//clinical notes and treatment plan
+import ClinicalNotes from '../pages/sections/ClinicalNotes/ClinicalNotes-TreatmentPlan.vue';
+
+
 //Patient management
 import PatientsView from '../pages/sections/Patients/Patients.vue';
 
@@ -72,7 +76,8 @@ const routes = [
       // chart
       { path: 'chart', name: 'ChartView', component: ChartView },
      
-
+      // clinical notes
+      { path: 'notes', name: 'ClinicalNotes', component: ClinicalNotes },
       //patient management
       { path: 'patients', name: 'Patients', component: PatientsView },
      
