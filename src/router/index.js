@@ -23,7 +23,9 @@ import ChartView from '../pages/sections/Chart/ChartView.vue';
 //clinical notes and treatment plan
 import ClinicalNotes from '../pages/sections/ClinicalNotes/ClinicalNotes-TreatmentPlan.vue';
 
-
+//Private Treatment & Invoicing
+import PrivateTreatmentInvoicing from '../pages/sections/PrivateTreatmentInvoicing/PrivateTreatmentInvoicing.vue';
+ 
 //Patient management
 import PatientsView from '../pages/sections/Patients/Patients.vue';
 
@@ -83,6 +85,9 @@ const routes = [
      
       // file storage
       { path: 'files', name: 'FileStorage', component: FileStorage },
+
+      // PrivateTreatmentInvoicing
+      { path: 'private-treatment-invoicing', name: 'PrivateTreatmentInvoicing', component: PrivateTreatmentInvoicing },
 
       { path: 'staff', name: 'Staff', component: StaffView },
       { path: 'reports', name: 'Reports', component: ReportsView },

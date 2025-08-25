@@ -33,6 +33,8 @@ export default {
           return "Chart";
         case "notes":
           return "Clinical Notes & Treatment Plan";
+        case "private-treatment-invoicing":
+          return "Private Treatment & Invoicing";
         case "files":
           return "File Storage";
         case "staff":

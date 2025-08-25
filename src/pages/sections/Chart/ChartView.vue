@@ -10,13 +10,7 @@
               {{ patient.lastVisit }}
             </p>
           </div>
-          <!-- <div class="button-group">
-            <button class="btn secondary">View History</button>
-            <button class="btn primary">
-              <span class="material-symbols-outlined add-icon">add</span> New Entry
-            </button>
-          </div> -->
-        </div>
+          </div>
       </div>
 
       <div class="card dental-chart">
@@ -693,7 +687,6 @@ const adultTeeth = ref([
     images: [],
   },
 ]);
-
 const pediatricTeeth = ref([
   // Upper Right Quadrant (55-51)
   {
@@ -941,127 +934,94 @@ const pediatricTeeth = ref([
   },
 ]);
 
-const currentTeeth = computed(() => {
-  return chartMode.value === "adult" ? adultTeeth.value : pediatricTeeth.value;
-});
+const currentTeeth = computed(() =>
+  chartMode.value === "adult" ? adultTeeth.value : pediatricTeeth.value
+);
 
 const switchChartMode = (mode) => {
   chartMode.value = mode;
-  activeTooth.value = null;
-  activeView.value = "images";
+  activeTooth.value = null; // Reset selection on mode switch
 };
 
 const selectTooth = (tooth) => {
   activeTooth.value = tooth;
-  activeView.value = "images";
 };
 
 const selectView = (view) => {
   activeView.value = view;
 };
 
-const getToothClass = (tooth) => {
-  const classes = ["tooth"];
-  if (tooth.number === activeTooth.value?.number) {
-    classes.push("active");
-  }
-  if (tooth.isCrown) classes.push("crown");
-  if (tooth.isImplant) classes.push("implant");
-  if (tooth.isMissing) classes.push("missing");
-
-  if (tooth.surfaces?.occlusal?.hasDecay) {
-    classes.push("decay");
-  } else if (tooth.surfaces?.occlusal?.hasFilling) {
-    classes.push("filling");
-  }
-
-  return classes.join(" ");
-};
-
-watch(chartMode, (newMode) => {
-  if (newMode === "adult" && adultTeeth.value.length > 0) {
-    activeTooth.value = adultTeeth.value[0];
-  } else if (newMode === "pediatric" && pediatricTeeth.value.length > 0) {
-    activeTooth.value = pediatricTeeth.value[0];
+// Watch for changes in activeTooth and log them for debugging
+watch(activeTooth, (newVal) => {
+  if (newVal) {
+    console.log(`Tooth #${newVal.number} selected.`);
   }
 });
 
-if (adultTeeth.value.length > 0) {
-  activeTooth.value = adultTeeth.value[0];
-}
+const getToothClass = (tooth) => {
+  const classes = ["tooth"];
+  if (tooth.isCrown) classes.push("crown");
+  if (tooth.isImplant) classes.push("implant");
+  if (tooth.isMissing) classes.push("missing");
+  if (activeTooth.value && activeTooth.value.number === tooth.number) {
+    classes.push("active");
+  }
+  return classes.join(" ");
+};
 </script>
 
 <style scoped>
-:root {
-  --primary-color: #4f46e5;
-  --primary-hover: #4338ca;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --background-color: #f3f4f6;
-  --border-color: #d1d5db;
-  --white: #ffffff;
-  --danger-color: #ef4444;
-  --info-color: #3b82f6;
-  --gold-color: #f59e0b;
-  --silver-color: #9ca3af;
-  --grey-color: #6b7280;
-  --decay-color: #ef4444;
-  --filling-color: #3b82f6;
-  --crown-color: #f59e0b;
-  --implant-color: #64748b;
-  --missing-color: #9ca3af;
-  --note-color: #fcd34d;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-body {
-  font-family: "Inter", sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-primary);
-  margin: 0;
-}
-
+/* Main container and content area styles */
 .main-container {
+  background-color: #f3f4f6;
+  font-family: 'Poppins', sans-serif;
+  color: #374151;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
   min-height: 100vh;
-  width: 100%;
+}
+
+/* Set specific color for headings for consistency */
+.chart-header h3, .legend h4, .content-title, .patient-name {
+  color: #333;
 }
 
 .content-container {
-  flex-grow: 1;
-  max-width: 100%;
-  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
 }
-
+/* ... rest of the styles ... */
 .card {
-  background-color: var(--white);
-  border-radius: 12px;
+  background-color: #fff;
+  border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   padding: 24px;
 }
 
 .patient-info {
-  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .patient-header {
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-}
-
-@media (min-width: 640px) {
-  .patient-header {
-    flex-direction: row;
-    align-items: center;
-  }
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .patient-name {
   font-size: 24px;
-  font-weight: 700;
-  color: #1f2937;
+  font-weight: 600;
+  margin: 0;
 }
 
 .patient-details {
@@ -1070,150 +1030,70 @@ body {
   margin-top: 4px;
 }
 
-.button-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-@media (min-width: 640px) {
-  .button-group {
-    margin-top: 0;
-  }
-}
-
-.btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  transition-property: background-color, border-color, color, fill, stroke, opacity,
-    box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-}
-
-.btn:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--primary-color);
-}
-
-.primary {
-  background-color: var(--primary-color);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.primary:hover {
-  background-color: var(--primary-hover);
-}
-
-.secondary {
-  background-color: #f3f4f6;
-  color: #4b5563;
-}
-
-.secondary:hover {
-  background-color: #e5e7eb;
-}
-
-.add-icon {
-  font-size: 16px;
-}
-
 .dental-chart {
-  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .chart-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1f2937;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
 }
 
 .mode-switch {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #f3f4f6;
-  padding: 4px;
-  border-radius: 8px;
+  border-radius: 4px;
+  background-color: #e5e7eb;
 }
 
 .mode-btn {
-  padding: 6px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  background-color: transparent;
+  padding: 8px 16px;
   border: none;
-  transition: all 0.3s ease-in-out;
-  color: #4b5563;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: #6b7280;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  border-radius: 4px;
 }
 
 .mode-btn.active {
-  color: var(--white);
-  background-color: var(--primary-color);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-}
-
-.mode-btn:hover:not(.active) {
-  background-color: var(--white);
+  background-color: #fff;
+  color: #1f2937;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 .chart-grid-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 12px;
 }
 
 .chart-grid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  flex-grow: 0;
-  flex-shrink: 0;
+  gap: 20px;
 }
 
 .jaw-row {
   display: flex;
   justify-content: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-@media (min-width: 640px) {
-  .jaw-row {
-    gap: 8px;
-  }
+  gap: 12px;
 }
 
 .quadrant {
   display: flex;
-  flex-wrap: wrap;
   gap: 4px;
-}
-
-@media (min-width: 640px) {
-  .quadrant {
-    gap: 6px;
-  }
+  flex-wrap: nowrap;
 }
 
 .quadrant-right {
@@ -1221,214 +1101,147 @@ body {
 }
 
 .tooth {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  background-color: var(--white);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  background-color: #e5e7eb;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  position: relative;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
 }
 
-@media (min-width: 768px) {
-  .tooth {
-    width: 48px;
-    height: 48px;
-  }
+.tooth.active {
+  border-color: #4f46e5;
+  background-color: #c7d2fe;
 }
 
 .tooth-number {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 500;
   color: #4b5563;
-  position: relative;
-  z-index: 10;
-  transition: transform 0.3s ease-in-out;
-}
-
-.tooth.active,
-.tooth:hover {
-  border-color: var(--primary-color);
-  transform: scale(1.05);
-  background-color: #eef2ff;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
-
-.tooth.active .tooth-number,
-.tooth:hover .tooth-number {
-  transform: translateY(-2px);
-}
-
-.tooth.crown {
-  background: linear-gradient(to bottom right, #fcd34d, #f59e0b);
-  border-color: #f59e0b;
-  color: var(--white);
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
-
-.tooth.implant {
-  background: linear-gradient(to bottom right, #cbd5e1, #64748b);
-  border-color: #64748b;
-  color: var(--white);
-  box-shadow: 0 4x 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
-
-.tooth.missing {
-  background-color: #d1d5db;
-  border-color: #9ca3af;
-  color: #6b7280;
-  opacity: 0.6;
-  text-decoration: line-through;
-}
-
-.tooth.decay {
-  background-color: var(--decay-color);
-  color: var(--white);
-}
-
-.tooth.filling {
-  background-color: var(--filling-color);
-  color: var(--white);
+  margin-bottom: 4px;
 }
 
 .note-indicator {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 16px;
-  height: 16px;
-  background-color: var(--note-color);
-  border-radius: 50%;
-  border: 2px solid var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  top: 4px;
+  right: 4px;
 }
 
 .note-dot {
   width: 6px;
   height: 6px;
-  background-color: #fcd34d;
+  background-color: #f59e0b;
   border-radius: 50%;
 }
 
-.card-section {
-  margin-top: 32px;
-  border-top: 1px solid #d1d5db;
-  padding-top: 24px;
-}
-
+/* Legend styles */
 .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 16px;
   align-items: center;
-  margin-bottom: 24px;
-  font-size: 14px;
 }
 
 .legend-title {
-  font-weight: 700;
-  color: #4b5563;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 14px;
+  color: #4b5563;
 }
 
 .legend-box {
-  width: 14px;
-  height: 14px;
-  border-radius: 2px;
-}
-
-.legend-note-dot {
-  width: 14px;
-  height: 14px;
-  background-color: var(--note-color);
-  border-radius: 50%;
-  border: 2px solid var(--white);
-  position: relative;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
 }
 
 .decay {
-  background-color: var(--decay-color);
+  background-color: #ef4444;
 }
 
 .filling {
-  background-color: var(--filling-color);
+  background-color: #3b82f6;
 }
 
 .crown {
-  background-image: linear-gradient(to bottom right, #fcd34d, #f59e0b);
+  background-color: #10b981;
 }
 
 .implant {
-  background-image: linear-gradient(to bottom right, #cbd5e1, #64748b);
+  background-color: #9333ea;
 }
 
 .missing {
-  background-color: var(--missing-color);
+  background-color: #6b7280;
 }
 
+.legend-note-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #f59e0b;
+  border-radius: 50%;
+}
+
+/* Navigation and dynamic content styles */
 .navigation-area {
-  border-top: 1px solid #d1d5db;
-  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .navigation-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 24px;
 }
 
 .nav-btn {
-  padding: 8px 16px;
+  padding: 10px 18px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  border-radius: 9999px;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  transition: all 0.3s ease-in-out;
-  border: none;
-  background-color: #f3f4f6;
   color: #4b5563;
   cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .nav-btn:hover {
-  background-color: #e5e7eb;
+  background-color: #f9fafb;
 }
 
 .nav-btn-active {
-  color: var(--white);
-  background-color: var(--primary-color);
-}
-
-.nav-btn-active:hover {
-  background-color: var(--primary-hover);
+  background-color: #4f46e5;
+  color: #fff;
+  border-color: #4f46e5;
 }
 
 .dynamic-content {
-  background-color: #f9fafb;
-  padding: 16px;
+  background-color: #fff;
   border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .content-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 0;
   margin-bottom: 16px;
 }
 
@@ -1438,16 +1251,45 @@ body {
   gap: 16px;
 }
 
-@media (min-width: 768px) {
-  .image-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+.no-content-text {
+  font-style: italic;
+  color: #6b7280;
 }
 
-@media (min-width: 1024px) {
-  .image-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-item {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 16px;
+}
+
+.history-date {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4f46e5;
+  margin: 0 0 4px 0;
+}
+
+.history-description {
+  font-size: 14px;
+  margin: 0;
+  color: #4b5563;
+}
+
+.bpe-text, .base-text, .ortho-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.bpe-list, .base-list, .ortho-list {
+  margin: 12px 0 0 20px;
+  padding: 0;
+  list-style: disc;
 }
 
 .image-item {
@@ -1490,48 +1332,7 @@ body {
 }
 
 .zoom-icon {
-  font-size: 32px;
-  color: var(--white);
-}
-
-.no-content-text {
-  font-size: 14px;
-  color: #4b5563;
-}
-
-.history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.history-item {
-  background-color: var(--white);
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.history-date {
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-.history-description {
-  font-size: 14px;
-  color: #1f2937;
-}
-
-.bpe-text, .base-text, .ortho-text {
-  font-size: 14px;
-  color: #4b5563;
-  line-height: 1.5;
-}
-
-.bpe-list, .base-list, .ortho-list {
-  margin: 8px 0 16px 20px;
-  list-style-type: disc;
+  font-size: 48px;
+  color: #fff;
 }
 </style>

@@ -35,6 +35,12 @@
       title="Clinical Notes"
     ></i>
     <i
+      class="fas fa-credit-card"
+      :class="{ active: active === 'private-treatment-invoicing' }"
+      @click="$emit('navigate', 'private-treatment-invoicing')"
+      title="Private Treatment & Invoicing"
+    ></i>
+    <i
       class="fas fa-folder-open"
       :class="{ active: active === 'files' }"
       @click="$emit('navigate', 'files')"

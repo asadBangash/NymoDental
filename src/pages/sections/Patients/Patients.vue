@@ -645,8 +645,9 @@ export default {
 <style scoped>
 /* Main layout */
 .main-content {
-  padding: 30px;
+  padding: 20px 30px;
   background-color: #f3f5f7;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 .header {
   display: flex;
@@ -661,7 +662,7 @@ export default {
 .page-title {
   font-size: 28px;
   font-weight: 600;
-  color: #333;
+  color: #303030;
 }
 .header-actions {
   display: flex;
@@ -675,7 +676,7 @@ export default {
 }
 .search-input {
   padding: 10px 10px 10px 40px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
 }
@@ -688,7 +689,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #4b3c97;
+  background-color: #34a7d8;
   color: #fff;
   padding: 10px 16px;
   border: none;
@@ -698,7 +699,7 @@ export default {
   transition: background-color 0.3s;
 }
 .add-button:hover {
-  background-color: #3a2e7a;
+  background-color: #3491d8;
 }
 .content-wrapper {
   display: flex;
@@ -1018,7 +1019,7 @@ export default {
   justify-content: flex-end;
 }
 .save-button {
-  background-color: #4b3c97;
+  background-color: #34a7d8;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -1027,6 +1028,6 @@ export default {
   font-weight: 500;
 }
 .save-button:hover {
-  background-color: #3a2e7a;
+  background-color: #3491d8;
 }
 </style>

@@ -220,13 +220,21 @@ export default {
 
 <style scoped>
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 body {
-  font-family: "Roboto", sans-serif;
-  background-color: #f4f7f9;
+  font-family: "Poppins", sans-serif; /* Updated font family */
+  background-color: #f3f4f6; /* Updated background color */
   margin: 0;
   padding: 0;
+  color: #374151; /* Updated primary font color */
+}
+
+/* Consistent heading color */
+.header__title,
+.card__title,
+.notes-title,
+.signature-title {
   color: #333;
 }
 
@@ -248,12 +256,11 @@ body {
   font-size: 24px;
   font-weight: 500;
   margin: 0;
-  color: #1a1a1a;
 }
 
 .header__patient-id {
   margin-left: 15px;
-  color: #666;
+  color: #6b7280; /* Adjusted for consistency */
 }
 
 .header__actions {
@@ -269,7 +276,7 @@ body {
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #d1d5db; /* Adjusted for consistency */
   background-color: #fff;
   border-radius: 6px;
   cursor: pointer;
@@ -281,20 +288,20 @@ body {
 }
 
 .header__button--primary {
-  background-color: #007bff;
+  background-color: #4f46e5;
   color: #fff;
-  border-color: #007bff;
+  border-color: #4f46e5;
 }
 
 .header__button--primary:hover {
-  background-color: #0069d9;
-  border-color: #0062cc;
+  background-color: #4338ca;
+  border-color: #4338ca;
 }
 
 .tabs {
   display: flex;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e0e0e0;
+  background-color: #e5e7eb; /* Adjusted for consistency */
+  border-bottom: 1px solid #d1d5db;
   padding: 0 40px;
 }
 
@@ -302,18 +309,18 @@ body {
   padding: 12px 20px;
   cursor: pointer;
   font-weight: 500;
-  color: #555;
+  color: #6b7280; /* Adjusted for consistency */
   border-bottom: 3px solid transparent;
   transition: border-bottom-color 0.2s, color 0.2s;
 }
 
 .tab:hover {
-  color: #000;
+  color: #1f2937; /* Adjusted for consistency */
 }
 
 .tab--active {
-  border-bottom-color: #007bff;
-  color: #000;
+  border-bottom-color: #4f46e5;
+  color: #1f2937;
 }
 
 .content-container {
@@ -328,22 +335,23 @@ body {
 }
 
 .card {
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   background: #fff;
   overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .card__header {
   display: flex;
   align-items: center;
   padding: 15px 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .card__title {
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
 }
 
@@ -357,8 +365,9 @@ body {
 .template-select {
   padding: 6px 10px;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  border: 1px solid #d1d5db;
   font-size: 14px;
+  color: #374151;
 }
 
 .card__body {
@@ -378,7 +387,7 @@ body {
 .form-control {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #d1d5db;
   border-radius: 4px;
   resize: vertical;
   min-height: 80px;
@@ -401,23 +410,23 @@ body {
 }
 
 .button--primary {
-  background-color: #007bff;
+  background-color: #4f46e5;
   color: #fff;
-  border: 1px solid #007bff;
+  border: 1px solid #4f46e5;
 }
 
 .button--primary:hover {
-  background-color: #0069d9;
+  background-color: #4338ca;
 }
 
 .button--secondary {
-  background-color: #f8f9fa;
-  color: #333;
-  border: 1px solid #e0e0e0;
+  background-color: #f9fafb;
+  color: #374151;
+  border: 1px solid #d1d5db;
 }
 
 .button--secondary:hover {
-  background-color: #e2e6ea;
+  background-color: #e5e7eb;
 }
 
 .treatment-table {
@@ -430,13 +439,13 @@ body {
 .treatment-table td {
   padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .treatment-table th {
-  background-color: #f8f9fa;
+  background-color: #e5e7eb;
   font-weight: 500;
-  color: #555;
+  color: #6b7280;
   text-transform: uppercase;
   font-size: 12px;
 }
@@ -472,20 +481,20 @@ body {
 
 .additional-notes {
   margin-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #e5e7eb;
   padding-top: 20px;
 }
 
 .notes-title,
 .signature-title {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 
 .notes-text {
   font-size: 14px;
-  color: #555;
+  color: #4b5563; /* Adjusted for consistency */
   line-height: 1.5;
 }
 
@@ -497,15 +506,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e5e7eb;
   border-radius: 4px;
   padding: 15px;
-  background-color: #f9f9f9;
+  background-color: #f9fafb;
 }
 
 .signature-text {
   font-style: italic;
-  color: #999;
+  color: #6b7280;
 }
 
 .signature-button {
@@ -517,7 +526,7 @@ body {
 /* Styles for the new notes section */
 .note-entry {
   padding: 15px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .note-entry:last-child {
@@ -532,17 +541,17 @@ body {
 }
 
 .note-date {
-  color: #555;
+  color: #6b7280;
 }
 
 .note-type {
-  color: #007bff;
+  color: #4f46e5;
 }
 
 .note-entry p {
   margin: 5px 0;
   font-size: 14px;
   line-height: 1.4;
-  color: #555;
+  color: #4b5563;
 }
 </style>
