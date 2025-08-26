@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <header class="header">
+    <header class="card header">
       <div class="header-left">
         <button @click="prevDay" class="header-button">
           <span class="material-icons">chevron_left</span>

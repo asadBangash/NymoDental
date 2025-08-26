@@ -243,6 +243,8 @@ body {
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
+  padding: 24px;
+  background-color: #f3f4f6; /* Consistent background color*/
 }
 
 .header {
@@ -253,16 +255,17 @@ body {
 }
 
 .header__title {
-  font-size: 24px;
-  font-weight: 500;
-  margin: 0;
+  font-size: 24px; /* Matches the larger patient name font size*/
+  font-weight: 700; /* Uses a bold font weight*/
+  color: #1f2937; /* Darker font color for emphasis*/
+  margin: 0; /* Remove default margin */
 }
 
 .header__patient-id {
   margin-left: 15px;
-  color: #6b7280; /* Adjusted for consistency */
+  color: #6b7280; /* Matches the gray color of patient details*/
+  font-size: 14px; /* Matches the font size of patient details*/
 }
-
 .header__actions {
   margin-left: auto;
   display: flex;

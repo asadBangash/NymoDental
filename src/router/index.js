@@ -16,7 +16,6 @@ import WaitingList from '../pages/sections/Appointments/Components/WaitingList.v
 import AppointmentTypes from '../pages/sections/Appointments/Components/AppointmentTypes.vue';
 import NewAppointment from '../pages/sections/Appointments/Components/NewAppointment.vue';
 
-
 // Chart module
 import ChartView from '../pages/sections/Chart/ChartView.vue';
 
@@ -31,6 +30,9 @@ import PatientsView from '../pages/sections/Patients/Patients.vue';
 
 // File storage
 import FileStorage from '../pages/sections/FileStorage.vue';
+
+// NHS FP17 Claims
+import NHSFP17Claims from '../pages/sections/NHSFP17Claims/Claims.vue';
 
 import StaffView from '../pages/sections/StaffView.vue';
 import ReportsView from '../pages/sections/ReportsView.vue';
@@ -88,6 +90,9 @@ const routes = [
 
       // PrivateTreatmentInvoicing
       { path: 'private-treatment-invoicing', name: 'PrivateTreatmentInvoicing', component: PrivateTreatmentInvoicing },
+      // NHS FP17 Claims
+      { path: 'claims', name: 'NHSFP17Claims', component: NHSFP17Claims },
+
 
       { path: 'staff', name: 'Staff', component: StaffView },
       { path: 'reports', name: 'Reports', component: ReportsView },

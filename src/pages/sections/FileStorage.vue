@@ -1,100 +1,99 @@
 <template>
-  <main class="main-container">
-    <!-- Header Section -->
-    <div class="header-section">
-      <div>
-        <h1 class="page-title">Imaging & File Storage</h1>
-        <p class="subtitle">
-          Manage files for patient: <span class="patient-name">{{ patientName }}</span>
-        </p>
+  <div class="dashboard-container">
+    <main class="main">
+      <div class="header-section">
+        <div>
+          <h1 class="page-title">Imaging & File Storage</h1>
+          <p class="subtitle">
+            Manage files for patient: <span class="patient-name">{{ patientName }}</span>
+          </p>
+        </div>
+        <div class="header-buttons">
+          <button class="btn btn-blue">
+            <span class="material-symbols-outlined icon-small">upload</span>
+            Upload File
+          </button>
+          <button class="btn btn-light">
+            <span class="material-symbols-outlined icon-small">create_new_folder</span>
+            New Folder
+          </button>
+        </div>
       </div>
-      <div class="header-buttons">
-        <button class="btn btn-blue">
-          <span class="material-symbols-outlined icon-small">upload</span>
-          Upload File
-        </button>
-        <button class="btn btn-light">
-          <span class="material-symbols-outlined icon-small">create_new_folder</span>
-          New Folder
-        </button>
-      </div>
-    </div>
 
-    <!-- File List -->
-    <div class="file-list-card">
-      <div class="table-header-container">
-        <div class="table-header-row">
-          <div class="table-header-cell col-name">Name</div>
-          <div class="table-header-cell col-type">Type</div>
-          <div class="table-header-cell col-date">Date Modified</div>
-          <div class="table-header-cell col-size">Size</div>
-          <div class="table-header-cell col-actions">Actions</div>
-        </div>
-      </div>
-      <div class="table-rows-container">
-        <div v-for="file in files" :key="file.name" class="table-row-item">
-          <div class="table-cell-content col-name">
-            <span class="material-symbols-outlined icon-margin" :class="file.iconColor">
-              {{ file.icon }}
-            </span>
-            <span class="file-name">{{ file.name }}</span>
-          </div>
-          <span class="table-cell-content col-type">{{ file.type }}</span>
-          <span class="table-cell-content col-date">{{ file.dateModified }}</span>
-          <span class="table-cell-content col-size">{{ file.size }}</span>
-          <div class="table-cell-content col-actions actions">
-            <button class="action-btn">
-              <span class="material-symbols-outlined icon-action">edit</span>
-            </button>
-            <button v-if="file.type !== 'Folder'" class="action-btn action-draw">
-              <span class="material-symbols-outlined icon-action">draw</span>
-            </button>
-            <button class="action-btn action-delete">
-              <span class="material-symbols-outlined icon-action">delete</span>
-            </button>
+      <div class="file-list-card">
+        <div class="table-header-container">
+          <div class="table-header-row">
+            <div class="table-header-cell col-name">Name</div>
+            <div class="table-header-cell col-type">Type</div>
+            <div class="table-header-cell col-date">Date Modified</div>
+            <div class="table-header-cell col-size">Size</div>
+            <div class="table-header-cell col-actions">Actions</div>
           </div>
         </div>
+        <div class="table-rows-container">
+          <div v-for="file in files" :key="file.name" class="table-row-item">
+            <div class="table-cell-content col-name">
+              <span class="material-symbols-outlined icon-margin" :class="file.iconColor">
+                {{ file.icon }}
+              </span>
+              <span class="file-name">{{ file.name }}</span>
+            </div>
+            <span class="table-cell-content col-type">{{ file.type }}</span>
+            <span class="table-cell-content col-date">{{ file.dateModified }}</span>
+            <span class="table-cell-content col-size">{{ file.size }}</span>
+            <div class="table-cell-content col-actions actions">
+              <button class="action-btn">
+                <span class="material-symbols-outlined icon-action">edit</span>
+              </button>
+              <button v-if="file.type !== 'Folder'" class="action-btn action-draw">
+                <span class="material-symbols-outlined icon-action">draw</span>
+              </button>
+              <button class="action-btn action-delete">
+                <span class="material-symbols-outlined icon-action">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Integrations Section -->
-    <div class="integrations-section">
-      <h3 class="integrations-title">System Integrations</h3>
-      <div class="integrations-grid">
-        <div class="integration-card">
-          <div class="icon-container-blue">
-            <span class="material-symbols-outlined icon-large">dns</span>
+      <div class="integrations-section">
+        <h3 class="integrations-title">System Integrations</h3>
+        <div class="integrations-grid">
+          <div class="integration-card">
+            <div class="icon-container-blue">
+              <span class="material-symbols-outlined icon-large">dns</span>
+            </div>
+            <div class="integration-content">
+              <p class="integration-heading">PACS Integration</p>
+              <p class="integration-description">
+                Connect to your Picture Archiving and Communication System for seamless
+                data flow.
+              </p>
+              <a href="#" class="link-btn link-blue">
+                Configure Now
+                <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
+              </a>
+            </div>
           </div>
-          <div class="integration-content">
-            <p class="integration-heading">PACS Integration</p>
-            <p class="integration-description">
-              Connect to your Picture Archiving and Communication System for seamless data
-              flow.
-            </p>
-            <a href="#" class="link-btn link-blue">
-              Configure Now
-              <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
-            </a>
-          </div>
-        </div>
-        <div class="integration-card">
-          <div class="icon-container-green">
-            <span class="material-symbols-outlined icon-large">photo_camera</span>
-          </div>
-          <div class="integration-content">
-            <p class="integration-heading">Auto-import from Imaging Hardware</p>
-            <p class="integration-description">
-              Automatically pull images directly from connected imaging devices.
-            </p>
-            <a href="#" class="link-btn link-green">
-              Setup Device
-              <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
-            </a>
+          <div class="integration-card">
+            <div class="icon-container-green">
+              <span class="material-symbols-outlined icon-large">photo_camera</span>
+            </div>
+            <div class="integration-content">
+              <p class="integration-heading">Auto-import from Imaging Hardware</p>
+              <p class="integration-description">
+                Automatically pull images directly from connected imaging devices.
+              </p>
+              <a href="#" class="link-btn link-green">
+                Setup Device
+                <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </main>
+    </main>
+  </div>
 </template>
 
 <script>
@@ -143,25 +142,16 @@ export default {
 </script>
 
 <style scoped>
-/* Base Styles */
-body {
-  font-family: "Inter", sans-serif;
-  background-color: #f9fafb;
-  margin: 0;
-  padding: 0;
-  color: #111827;
+.dashboard-container {
+  display: flex;
+  background: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-}
-
-/* Layout */
-.main-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  box-sizing: border-box;
+.main {
+  flex-grow: 1;
+  padding: 20px 30px;
+  background: #fff;
 }
 
 /* Header Section */
@@ -174,16 +164,19 @@ body {
 }
 
 .page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: 28px;
+  font-weight: 600;
+  color: #303030;
   margin: 0;
+  font-family: Poppins;
 }
 
 .subtitle {
-  color: #6b7280;
-  font-size: 1rem;
+  color: #34d8d1;
+  font-size: 16px;
+  font-weight: bold;
   margin-top: 0.25rem;
+  font-family: Poppins;
 }
 
 .patient-name {
@@ -248,6 +241,7 @@ body {
   align-items: center;
   padding: 0.75rem 1rem;
   gap: 1rem;
+  font-family: Poppins;
 }
 
 .table-header-row {
@@ -350,6 +344,7 @@ body {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
+  font-family: Poppins;
 }
 
 .integrations-grid {
@@ -400,6 +395,7 @@ body {
   font-weight: 600;
   margin: 0;
   color: #111827;
+  font-family: Poppins;
 }
 
 .integration-description {
@@ -418,7 +414,7 @@ body {
   border: none;
   padding: 0;
   color: inherit;
-  font-family: inherit;
+  font-family: Poppins;
   text-decoration: none;
 }
 

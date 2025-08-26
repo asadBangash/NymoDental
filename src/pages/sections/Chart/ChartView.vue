@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <main class="content-container">
-      <div class="card patient-info">
+      <div class="card patient-info full-width">
         <div class="patient-header">
           <div>
             <h2 class="patient-name">Patient: {{ patient.name }}</h2>
@@ -10,10 +10,10 @@
               {{ patient.lastVisit }}
             </p>
           </div>
-          </div>
+        </div>
       </div>
 
-      <div class="card dental-chart">
+      <div class="card dental-chart full-width">
         <div class="chart-header">
           <h3 class="chart-title">Dental Chart</h3>
           <div class="mode-switch">
@@ -27,7 +27,7 @@
               :class="{ 'mode-btn': true, active: chartMode === 'pediatric' }"
               @click="switchChartMode('pediatric')"
             >
-              Pediatric
+            Pediatric
             </button>
           </div>
         </div>
@@ -93,35 +93,37 @@
         </div>
       </div>
 
-      <div class="legend">
+      <div class="legend full-width">
         <h4 class="legend-title">Legend:</h4>
-        <div class="legend-item">
-          <div class="legend-box decay"></div>
-          <span>Decay</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-box filling"></div>
-          <span>Filling</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-box crown"></div>
-          <span>Crown</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-box implant"></div>
-          <span>Implant</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-box missing"></div>
-          <span>Missing</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-note-dot"></div>
-          <span>Note</span>
+        <div class="legend-items-container">
+          <div class="legend-item">
+            <div class="legend-box decay"></div>
+            <span>Decay</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box filling"></div>
+            <span>Filling</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box crown"></div>
+            <span>Crown</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box implant"></div>
+            <span>Implant</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box missing"></div>
+            <span>Missing</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-note-dot"></div>
+            <span>Note</span>
+          </div>
         </div>
       </div>
 
-      <div class="navigation-area">
+      <div class="navigation-area full-width">
         <div class="navigation-controls">
           <button
             :class="{ 'nav-btn': true, 'nav-btn-active': activeView === 'images' }"
@@ -687,6 +689,7 @@ const adultTeeth = ref([
     images: [],
   },
 ]);
+
 const pediatricTeeth = ref([
   // Upper Right Quadrant (55-51)
   {
@@ -934,166 +937,180 @@ const pediatricTeeth = ref([
   },
 ]);
 
-const currentTeeth = computed(() =>
-  chartMode.value === "adult" ? adultTeeth.value : pediatricTeeth.value
-);
+const currentTeeth = computed(() => {
+  return chartMode.value === "adult" ? adultTeeth.value : pediatricTeeth.value;
+});
+
+const getToothClass = (tooth) => {
+  return {
+    tooth: true,
+    selected: activeTooth.value === tooth,
+    decay: hasDecay(tooth),
+    filling: hasFilling(tooth),
+    crown: tooth.isCrown,
+    implant: tooth.isImplant,
+    missing: tooth.isMissing,
+    "has-images": tooth.images.length > 0,
+    "has-note": tooth.hasNote,
+  };
+};
+
+const hasDecay = (tooth) => {
+  if (!tooth.surfaces) return false;
+  return Object.values(tooth.surfaces).some((surface) => surface.hasDecay);
+};
+
+const hasFilling = (tooth) => {
+  if (!tooth.surfaces) return false;
+  return Object.values(tooth.surfaces).some((surface) => surface.hasFilling);
+};
 
 const switchChartMode = (mode) => {
   chartMode.value = mode;
-  activeTooth.value = null; // Reset selection on mode switch
+  activeTooth.value = null; // Reset selection when switching modes
 };
 
 const selectTooth = (tooth) => {
   activeTooth.value = tooth;
+  // Automatically switch to images view when a tooth is selected
+  activeView.value = "images";
 };
 
 const selectView = (view) => {
   activeView.value = view;
 };
 
-// Watch for changes in activeTooth and log them for debugging
-watch(activeTooth, (newVal) => {
-  if (newVal) {
-    console.log(`Tooth #${newVal.number} selected.`);
-  }
+// If a tooth is selected and the chart mode changes, clear the active tooth
+watch(chartMode, () => {
+  activeTooth.value = null;
 });
 
-const getToothClass = (tooth) => {
-  const classes = ["tooth"];
-  if (tooth.isCrown) classes.push("crown");
-  if (tooth.isImplant) classes.push("implant");
-  if (tooth.isMissing) classes.push("missing");
-  if (activeTooth.value && activeTooth.value.number === tooth.number) {
-    classes.push("active");
+watch(activeTooth, (newTooth) => {
+  if (newTooth) {
+    console.log("Selected tooth:", newTooth.number);
   }
-  return classes.join(" ");
-};
+});
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-/* Main container and content area styles */
 .main-container {
-  background-color: #f3f4f6;
-  font-family: 'Poppins', sans-serif;
-  color: #374151;
   display: flex;
   justify-content: center;
-  padding: 24px;
+  background-color: #f3f4f6;
   min-height: 100vh;
-}
-
-/* Set specific color for headings for consistency */
-.chart-header h3, .legend h4, .content-title, .patient-name {
-  color: #333;
+  font-family: "Inter", sans-serif;
 }
 
 .content-container {
+  width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100%;
-  max-width: 1200px;
+  padding: 24px;
 }
-/* ... rest of the styles ... */
+
 .card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   padding: 24px;
 }
 
 .patient-info {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.full-width {
+  width: 100%;
+  max-width: 100%;
 }
 
 .patient-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
+  align-items: center;
 }
 
 .patient-name {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #1f2937;
   margin: 0;
 }
 
 .patient-details {
   font-size: 14px;
   color: #6b7280;
-  margin-top: 4px;
+  margin: 4px 0 0 0;
 }
 
 .dental-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  margin-bottom: 24px;
 }
 
 .chart-title {
   font-size: 20px;
   font-weight: 600;
+  color: #1f2937;
   margin: 0;
 }
 
 .mode-switch {
   display: flex;
-  border-radius: 4px;
   background-color: #e5e7eb;
+  border-radius: 8px;
+  padding: 4px;
 }
 
 .mode-btn {
-  padding: 8px 16px;
-  border: none;
   background-color: transparent;
-  cursor: pointer;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
   font-size: 14px;
-  color: #6b7280;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #4b5563;
 }
 
 .mode-btn.active {
-  background-color: #fff;
-  color: #1f2937;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #4f46e5;
 }
 
 .chart-grid-container {
-  overflow-x: auto;
-  padding-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .chart-grid {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 1000px;
 }
 
 .jaw-row {
   display: flex;
-  justify-content: center;
-  gap: 12px;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .quadrant {
   display: flex;
-  gap: 4px;
-  flex-wrap: nowrap;
+  gap: 8px;
 }
 
 .quadrant-right {
@@ -1101,66 +1118,103 @@ const getToothClass = (tooth) => {
 }
 
 .tooth {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
+  background-color: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-end;
-  cursor: pointer;
-  background-color: #e5e7eb;
-  border: 2px solid transparent;
-  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
   position: relative;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.tooth.active {
+.tooth:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tooth.selected {
   border-color: #4f46e5;
-  background-color: #c7d2fe;
+  box-shadow: 0 0 0 3px #c7d2fe;
 }
 
 .tooth-number {
-  font-size: 12px;
-  font-weight: 500;
-  color: #4b5563;
-  margin-bottom: 4px;
+  z-index: 1;
 }
 
 .note-indicator {
   position: absolute;
   top: 4px;
   right: 4px;
-}
-
-.note-dot {
   width: 6px;
   height: 6px;
-  background-color: #f59e0b;
+  background-color: #fcd34d;
   border-radius: 50%;
 }
 
-/* Legend styles */
+.tooth.decay::after,
+.tooth.filling::after,
+.tooth.crown::after,
+.tooth.implant::after,
+.tooth.missing::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  opacity: 0.8;
+  z-index: 0;
+}
+
+.tooth.decay::after {
+  background-color: #ef4444;
+}
+
+.tooth.filling::after {
+  background-color: #3b82f6;
+}
+
+.tooth.crown::after {
+  background-color: #9ca3af;
+}
+
+.tooth.implant::after {
+  background-color: #10b981;
+}
+
+.tooth.missing::after {
+  background-color: #6b7280;
+}
+
 .legend {
+}
+
+.legend-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.legend-items-container {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   align-items: center;
 }
 
-.legend-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-}
-
 .legend-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  color: #4b5563;
 }
 
 .legend-box {
@@ -1169,34 +1223,29 @@ const getToothClass = (tooth) => {
   border-radius: 4px;
 }
 
-.decay {
+.legend-box.decay {
   background-color: #ef4444;
 }
-
-.filling {
+.legend-box.filling {
   background-color: #3b82f6;
 }
-
-.crown {
+.legend-box.crown {
+  background-color: #9ca3af;
+}
+.legend-box.implant {
   background-color: #10b981;
 }
-
-.implant {
-  background-color: #9333ea;
-}
-
-.missing {
+.legend-box.missing {
   background-color: #6b7280;
 }
 
 .legend-note-dot {
-  width: 10px;
-  height: 10px;
-  background-color: #f59e0b;
+  width: 16px;
+  height: 16px;
+  background-color: #fcd34d;
   border-radius: 50%;
 }
 
-/* Navigation and dynamic content styles */
 .navigation-area {
   display: flex;
   flex-direction: column;
@@ -1210,39 +1259,39 @@ const getToothClass = (tooth) => {
 }
 
 .nav-btn {
-  padding: 10px 18px;
+  background-color: #e5e7eb;
   border: 1px solid #d1d5db;
-  background-color: #fff;
-  border-radius: 9999px;
+  border-radius: 8px;
+  padding: 10px 16px;
   font-size: 14px;
   font-weight: 500;
   color: #4b5563;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: all 0.2s;
 }
 
 .nav-btn:hover {
-  background-color: #f9fafb;
+  background-color: #d1d5db;
 }
 
 .nav-btn-active {
   background-color: #4f46e5;
-  color: #fff;
+  color: white;
   border-color: #4f46e5;
 }
 
 .dynamic-content {
-  background-color: #fff;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 24px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .content-title {
   font-size: 18px;
   font-weight: 600;
-  margin-top: 0;
-  margin-bottom: 16px;
+  color: #1f2937;
+  margin: 0 0 16px 0;
 }
 
 .image-grid {
@@ -1290,49 +1339,5 @@ const getToothClass = (tooth) => {
   margin: 12px 0 0 20px;
   padding: 0;
   list-style: disc;
-}
-
-.image-item {
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.image-preview {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  transition: transform 0.3s ease-in-out;
-}
-
-.image-item:hover .image-preview {
-  transform: scale(1.05);
-}
-
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  border-radius: 8px;
-}
-
-.image-item:hover .image-overlay {
-  opacity: 1;
-}
-
-.zoom-icon {
-  font-size: 48px;
-  color: #fff;
 }
 </style>

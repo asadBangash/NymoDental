@@ -41,6 +41,12 @@
       title="Private Treatment & Invoicing"
     ></i>
     <i
+      class="fas fa-receipt"
+      :class="{ active: active === 'claims' }"
+      @click="$emit('navigate', 'claims')"
+      title="NHS FP17 Claims (EDI Submission)"
+    ></i>
+    <i
       class="fas fa-folder-open"
       :class="{ active: active === 'files' }"
       @click="$emit('navigate', 'files')"

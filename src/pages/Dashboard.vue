@@ -35,6 +35,8 @@ export default {
           return "Clinical Notes & Treatment Plan";
         case "private-treatment-invoicing":
           return "Private Treatment & Invoicing";
+        case "claims":
+          return "NHS FP17 Claims (EDI Submission)";
         case "files":
           return "File Storage";
         case "staff":
@@ -55,6 +57,12 @@ export default {
           return "Appointments Calendar";
         case "chart":
           return "Analytics & Charts";
+        case "notes":
+          return "Clinical Notes & Treatment Plan";
+        case "private-treatment-invoicing":
+          return "Private Treatment & Invoicing";
+        case "claims":
+          return "NHS FP17 Claims (EDI Submission)";
         case "files":
           return "Manage your files";
         case "staff":
