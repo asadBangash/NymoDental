@@ -37,6 +37,8 @@ export default {
           return "Private Treatment & Invoicing";
         case "claims":
           return "NHS FP17 Claims (EDI Submission)";
+        case "uda":
+          return " UDA Management (Units of Dental Activity)";
         case "files":
           return "File Storage";
         case "staff":
@@ -63,6 +65,8 @@ export default {
           return "Private Treatment & Invoicing";
         case "claims":
           return "NHS FP17 Claims (EDI Submission)";
+        case "uda":
+          return " UDA Management (Units of Dental Activity)";
         case "files":
           return "Manage your files";
         case "staff":

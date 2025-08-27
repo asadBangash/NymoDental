@@ -34,6 +34,9 @@ import FileStorage from '../pages/sections/FileStorage.vue';
 // NHS FP17 Claims
 import NHSFP17Claims from '../pages/sections/NHSFP17Claims/Claims.vue';
 
+//UDA Management
+import UDAManagement from '../pages/sections/UDAManagement/UDAManagement.vue';
+
 import StaffView from '../pages/sections/StaffView.vue';
 import ReportsView from '../pages/sections/ReportsView.vue';
 import SettingsView from '../pages/sections/SettingsView.vue';
@@ -92,6 +95,9 @@ const routes = [
       { path: 'private-treatment-invoicing', name: 'PrivateTreatmentInvoicing', component: PrivateTreatmentInvoicing },
       // NHS FP17 Claims
       { path: 'claims', name: 'NHSFP17Claims', component: NHSFP17Claims },
+
+      //UDAManagement
+      { path: 'uda', name: 'UDAManagement', component: UDAManagement },
 
 
       { path: 'staff', name: 'Staff', component: StaffView },
