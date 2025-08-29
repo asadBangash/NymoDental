@@ -54,6 +54,12 @@
         title="UDA Management (Units of Dental Activity)"
       ></i>
       <i
+        class="fas fa-file-contract"
+        :class="{ active: active === 'pcm' }"
+        @click="$emit('navigate', 'pcm')"
+        title="Performer & Contract Management"
+      ></i>
+      <i
         class="fas fa-folder-open"
         :class="{ active: active === 'files' }"
         @click="$emit('navigate', 'files')"

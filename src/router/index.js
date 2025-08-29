@@ -37,6 +37,10 @@ import NHSFP17Claims from '../pages/sections/NHSFP17Claims/Claims.vue';
 //UDA Management
 import UDAManagement from '../pages/sections/UDAManagement/UDAManagement.vue';
 
+//Performer & Contract Management
+import PerformerContractManagement from '../pages/sections/Performer&ContractManagement/PerformerContractManagement.vue';
+
+
 import StaffView from '../pages/sections/StaffView.vue';
 import ReportsView from '../pages/sections/ReportsView.vue';
 import SettingsView from '../pages/sections/SettingsView.vue';
@@ -99,6 +103,8 @@ const routes = [
       //UDAManagement
       { path: 'uda', name: 'UDAManagement', component: UDAManagement },
 
+      //Performer & Contract Management
+      { path: 'pcm', name: 'PerformerContractManagement', component: PerformerContractManagement },
 
       { path: 'staff', name: 'Staff', component: StaffView },
       { path: 'reports', name: 'Reports', component: ReportsView },

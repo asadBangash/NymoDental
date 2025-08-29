@@ -39,6 +39,8 @@ export default {
           return "NHS FP17 Claims (EDI Submission)";
         case "uda":
           return " UDA Management (Units of Dental Activity)";
+        case "pcm":
+          return " Performer & Contract Management";
         case "files":
           return "File Storage";
         case "staff":
@@ -67,6 +69,8 @@ export default {
           return "NHS FP17 Claims (EDI Submission)";
         case "uda":
           return " UDA Management (Units of Dental Activity)";
+        case "pcm":
+          return " Performer & Contract Management";
         case "files":
           return "Manage your files";
         case "staff":

@@ -416,8 +416,8 @@ export default {
 }
 
 .nav-tab.active {
-  color: #2563eb;
-  border-bottom: 2px solid #2563eb;
+  color: #111418;
+  border-bottom: 2px solid #111418;
 }
 
 @media (min-width: 640px) {

@@ -322,8 +322,8 @@ body {
 }
 
 .tab--active {
-  border-bottom-color: #4f46e5;
-  color: #1f2937;
+  border-bottom-color: #111418;
+  color: #111418;
 }
 
 .content-container {
