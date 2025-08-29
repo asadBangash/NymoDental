@@ -40,6 +40,8 @@ import UDAManagement from '../pages/sections/UDAManagement/UDAManagement.vue';
 //Performer & Contract Management
 import PerformerContractManagement from '../pages/sections/Performer&ContractManagement/PerformerContractManagement.vue';
 
+//Lab & Referral Workflow
+import LabReferralWorkflow from '../pages/sections/Lab&ReferralWorkflow/LabReferralWorkflow.vue';
 
 import StaffView from '../pages/sections/StaffView.vue';
 import ReportsView from '../pages/sections/ReportsView.vue';
@@ -105,6 +107,9 @@ const routes = [
 
       //Performer & Contract Management
       { path: 'pcm', name: 'PerformerContractManagement', component: PerformerContractManagement },
+
+      //Lab & Referral Workflow
+      { path: 'lab', name: 'LabReferralWorkflow', component: LabReferralWorkflow },
 
       { path: 'staff', name: 'Staff', component: StaffView },
       { path: 'reports', name: 'Reports', component: ReportsView },

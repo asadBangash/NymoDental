@@ -60,6 +60,12 @@
         title="Performer & Contract Management"
       ></i>
       <i
+        class="fas fa-vial"
+        :class="{ active: active === 'lab' }"
+        @click="$emit('navigate', 'lab')"
+        title="Lab & Referral Workflow"
+      ></i>
+      <i
         class="fas fa-folder-open"
         :class="{ active: active === 'files' }"
         @click="$emit('navigate', 'files')"
